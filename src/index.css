@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+  font-synthesis: none;
+}
+
+body {
+  width: 100%;
+  margin: 0;
+}
+
+@source inline("font-['Manrope',sans-serif]");
+@source inline("font-['Comfortaa',cursive]");
+@source inline("font-['Buenard',serif]");
+@source inline("font-['Unna',serif]");
+@source inline("font-['Inter',system-ui,sans-serif]");
+@source inline("font-['ADLaM Display',sans-serif]");
+@source inline("font-['Cambay',sans-serif]");
+@source inline("font-['Poppins',sans-serif]");
+@source inline("font-['Bree Serif',serif]");
+
+@theme {
+    --color-primary: #FF2A6A;
+    --color-admin-burgundy: #5F0F40;
+    --color-admin-mint: #D4F4E4;
+    --color-admin-sage: #A3C4BC;
+    --color-admin-dark: #1e293b;
+
+    --color-main-background: var(--color-main-background);
+    --color-primary-background: var(--color-primary-background);
+    --color-secondary-background: var(--color-secondary-background);
+    --color-text-primary: var(--color-text-primary);
+    --color-text-secondary: var(--color-text-secondary);
+
+    --font-sans: "Inter", sans-serif;
+}
+
+:root {
+    --color-main-background: #FFF0E2A6;
+    --color-primary-background: #ffffff;
+    --color-secondary-background: #F9FAFB;
+    --color-text-primary: #000000;
+    --color-text-secondary: #6B7280;
+}
+
+.dark-mode {
+    --color-main-background: #14110F;
+    --color-primary-background: #000000;
+    --color-secondary-background: #334155;
+    --color-text-primary: #ffffff;
+    --color-text-secondary: #9CA3AF;
+}
+
+button{
+    cursor: pointer;
+}

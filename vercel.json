@@ -1,0 +1,19 @@
+{
+    "rewrites": [
+        {
+            "source": "/shop/:id",
+            "has": [
+                {
+                    "type": "header",
+                    "key": "User-Agent",
+                    "value": ".*(facebookexternalhit|Twitterbot|LinkedInBot|WhatsApp|TelegramBot|Discordbot).*"
+                }
+            ],
+            "destination": "https://polished-squirrel-707.convex.site/shop/:id"
+        },
+        {
+            "source": "/(.*)",
+            "destination": "/index.html"
+        }
+    ]
+}
