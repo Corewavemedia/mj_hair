@@ -1,5 +1,5 @@
 import { Mail, MapPin, Phone } from "lucide-react";
-import imgJennyLogo from "../assets/logo.png";
+import imgJennyLogo from "../assets/logo.svg";
 import { Link } from "react-router-dom";
 import { siInstagram, siTiktok, siWhatsapp } from 'simple-icons/icons';
 import { useState } from "react";

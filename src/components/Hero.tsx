@@ -1,6 +1,6 @@
 import { motion, type Variants } from "framer-motion";
 import imgBackground from "../assets/background.svg";
-import imgHero from "../assets/hero-img.svg";
+import imgHero from "../assets/hero-image.svg";
 import { IconStar } from "./Icons";
 import { Link } from "react-router-dom";
 

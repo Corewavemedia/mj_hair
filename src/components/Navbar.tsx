@@ -5,7 +5,7 @@ import { useState } from "react";
 import cart from "../assets/icons/cart.svg"
 import { motion, AnimatePresence } from "framer-motion";
 import { CircleUserRound } from 'lucide-react';
-import imgJennyLogo1 from "../assets/logo.png";
+import imgJennyLogo1 from "../assets/logo.svg";
 import UserProfile from "./UserProfile";
 
 export default function Navbar() {
