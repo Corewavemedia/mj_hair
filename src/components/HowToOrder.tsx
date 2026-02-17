@@ -60,7 +60,7 @@ export default function HowToOrder() {
     };
 
     return (
-        <section className="bg-[#3D0A1C] py-24 px-6 overflow-hidden min-h-screen flex flex-col justify-center">
+        <section className="#C77C44 py-24 px-6 overflow-hidden min-h-screen flex flex-col justify-center">
             <div className="max-w-[1400px] mx-auto w-full">
                 <motion.h2
                     initial={{ opacity: 0, y: -50 }}

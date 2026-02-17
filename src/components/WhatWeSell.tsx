@@ -45,7 +45,7 @@ export default function WhatWeSell() {
     return (
         <section className="max-w-[1400px] mx-auto px-6 pt-[23px] pb-24 text-center">
             <motion.h2
-                className="font-['Cambay'] font-bold text-[3rem] text-[#EF2460] mb-16"
+                className="font-['Cambay'] font-bold text-[3rem] text-[#5E4431] mb-16"
                 initial={{ opacity: 0, y: -20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -98,7 +98,7 @@ export default function WhatWeSell() {
                             }}
                         >
                             <div className="bg-white p-2 rounded-full shadow-lg">
-                                <Link to="/shop" className="block w-full bg-[#82132F] hover:bg-[#A91E40] text-white py-3 rounded-full font-['Comfortaa'] font-medium text-sm transition-colors duration-300 shadow-inner">
+                                <Link to="/shop" className="block w-full bg-gradient-to-br from-[#753803] to-[#E08D5A] text-white py-3 rounded-full font-['Comfortaa'] font-medium text-sm transition-colors duration-300 shadow-inner">
                                     Shop Now
                                 </Link>
                             </div>
