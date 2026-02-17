@@ -52,7 +52,7 @@ export default function About() {
 
                     {/* Front Right Image (Curly Hairs - Main Focus) */}
                     <motion.div
-                        className="absolute top-[46px] left-[173px] lg:left-[188px] w-[240px] lg:w-[282px] h-[293px] z-20 rounded-[15px] overflow-hidden shadow-2xl border-[8px] border-white"
+                        className="absolute top-[46px] left-[173px] lg:left-[188px] w-[240px] lg:w-[282px] h-[293px] z-20 rounded-[15px] overflow-hidden shadow-2xl border-[8px] bg-white border-white"
                         variants={{
                             hidden: { opacity: 0, x: 50, scale: 1.1 },
                             visible: { opacity: 1, x: 0, scale: 1, transition: { duration: 0.8, delay: 0.4, type: "spring", stiffness: 100 } }
@@ -78,7 +78,7 @@ export default function About() {
                     >
                         <Link to="/shop">
                             <motion.div
-                                className="bg-gradient-to-r from-[#EF2460] to-[#991438] text-white w-[204px] lg:w-[254px] h-[80px] lg:h-[104px] px-auto lg:px-10 py-3.5 rounded-2xl font-['Comfortaa'] text-[24px] lg:text-[32px] font-bold shadow-xl flex items-center justify-center"
+                                className="bg-gradient-to-r from-[#E08D5A] to-[#6A3E1D] text-white w-[204px] lg:w-[254px] h-[80px] lg:h-[104px] px-auto lg:px-10 py-3.5 rounded-2xl font-['Comfortaa'] text-[24px] lg:text-[32px] font-bold shadow-xl flex items-center justify-center"
                                 whileHover={{ scale: 1.05 }}
                                 whileTap={{ scale: 0.95 }}
                                 animate={{
@@ -105,7 +105,7 @@ export default function About() {
                         visible: { opacity: 1, transition: { staggerChildren: 0.15, delayChildren: 0.3 } }
                     }}
                 >
-                    {/* Typography: ABOUT JENNY'S HAIR & WIGS */}
+                    {/* Typography: ABOUT MJ'S HAIR PALACE */}
                     <motion.h2
                         className="font-['Buenard'] text-3xl lg:text-4xl mb-[23px] tracking-wide"
                         variants={{
@@ -113,14 +113,14 @@ export default function About() {
                             visible: { opacity: 1, x: 0, transition: { duration: 0.6 } }
                         }}
                     >
-                        <span className="text-[#333333] font-normal">ABOUT </span>
-                        <span className="text-[#EF2460] font-['Unna'] font-bold">JENNY'S </span>
-                        <span className="text-[#8B1A3A] font-normal">HAIR & WIGS</span>
+                        <span className="text-[#000000] font-normal">ABOUT </span>
+                        <span className="text-[#E08D5A] font-['Unna'] font-bold">MJ'S </span>
+                        <span className="text-[#6A3E1D] font-normal">HAIR PALACE</span>
                     </motion.h2>
 
                     {/* Dark Gradient Content Box */}
                     <motion.div
-                        className="bg-gradient-to-br from-[#2D0F18] via-[#3D1420] to-[#961A3F] rounded-[32px] lg:-mr-[52px] px-[50px] lg:pl-[63px] lg:pr-[84px] py-[38px] shadow-2xl relative overflow-hidden text-white/90 font-['Inter'] leading-relaxed h-fit flex flex-col justify-center"
+                        className="bg-gradient-to-r from-[#6A3E1D] to-[#E08D5A] rounded-[32px] lg:-mr-[52px] px-[50px] lg:pl-[63px] lg:pr-[84px] py-[38px] shadow-2xl relative overflow-hidden text-white/90 font-['Inter'] leading-relaxed h-fit flex flex-col justify-center"
                         variants={{
                             hidden: { opacity: 0, scale: 0.95, y: 20 },
                             visible: { opacity: 1, scale: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
@@ -128,16 +128,19 @@ export default function About() {
                         whileHover={{ scale: 1.02, transition: { duration: 0.3 } }}
                     >
                         <motion.p className="mb-6 text-[15px] lg:text-[16px]" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}>
-                            Jenny's hair has grown to become one of the leading premium hair brand since it's establishment in 2017. 
-                            A brand based in the UK supplies hair worldwide with a vast clientele in UK, 
-                            USA and Africa. 
-                            Part of Jenny's hair growth has also been its signature wig making which was established by a self taught and as well as Jenny's quality hair supply has been a major trend for the brand. 
-                            Jenny's hair as a brand continues to grow thinking of more innovative styles for existing and new customers. 
-                            Check out our very exciting products and services below. 
-                            Our team are here to help you feel and look amazing.
+                            Founded 8 years ago, our brand was created with a clear purpose: to empower women through beauty, confidence, and quality hair solutions. <br />
+                            From humble beginnings, we’ve grown into a leading hair brand trusted by thousands. With over 35,000 positive reviews and a loyal global customer base, our reputation is built on excellence, integrity, and consistent delivery of premium quality. <br />
+                            We specialise in luxury wigs, premium bundles, and custom-made units, carefully crafted to meet the highest standards of beauty, comfort, and durability. Every piece is designed to enhance natural beauty and elevate confidence.<br />
+                            Our brand stands on: <br />
+                            ✨ Trust <br />
+                            ✨ Excellence <br />
+                            ✨ Consistency <br />
+                            ✨ Quality <br />
+                            ✨ Integrity <br />
+                            ✨ Customer satisfaction
                         </motion.p>
                         <motion.p className="text-[15px] lg:text-[16px]" variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}>
-                            Your satisfaction is top priority
+                            With 8 years of experience, thousands of transformations, and tens of thousands of happy clients, we are more than a business — we are a trusted beauty authority and a brand women believe in.
                         </motion.p>
                     </motion.div>
                 </motion.div>
