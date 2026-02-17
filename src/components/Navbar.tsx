@@ -40,7 +40,7 @@ export default function Navbar() {
                 initial={{ y: -100, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                className={`${isScrollablePage ? "relative mb-8 mx-auto" : "fixed top-6 left-1/2 -translate-x-1/2 "} z-50 w-[85%] max-w-[1000px] bg-gradient-to-r from-[#EF2460] to-[#861134] pl-[15px] lg:pl-[35px] pr-[10px] lg:pr-[20px] py-[10px] md:py-[15px] flex items-center justify-between rounded-full`}
+                className={`${isScrollablePage ? "relative mb-8 mx-auto" : "fixed top-6 left-1/2 -translate-x-1/2 "} z-50 w-[85%] max-w-[1000px] bg-gradient-to-t from-[#E08D5A] to-[#753803] pl-[15px] lg:pl-[35px] pr-[10px] lg:pr-[20px] py-[10px] md:py-[15px] flex items-center justify-between rounded-full`}
             >
                 <Link to="/">
                     <img
@@ -74,8 +74,8 @@ export default function Navbar() {
                 </ul>
 
 
-                <div className="relative p-[2px] md:p-[3px] rounded-full bg-gradient-to-r from-[#EF2460] to-white">
-                    <div className="flex items-center gap-1 md:gap-3 bg-[#EF2460] backdrop-blur-md px-2 py-1 rounded-full shadow-sm">
+                <div className="relative p-[2px] md:p-[3px] rounded-full bg-white">
+                    <div className="flex items-center gap-1 md:gap-3 bg-[#FAA75F] backdrop-blur-md px-2 py-1 rounded-full shadow-sm">
 
                         <div className="relative">
                             <UserProfile />
@@ -85,11 +85,11 @@ export default function Navbar() {
                                 </Link>
                             </SignedOut>
                         </div>
-                        <Link to="/cart" className="relative flex items-center gap-3 bg-gradient-to-r from-[#4f0a1e] to-[#861134] text-white pl-4 pr-5 py-2 rounded-full shadow-md ml-1 hover:scale-105 transition">
+                        <Link to="/cart" className="relative flex items-center gap-3 bg-gradient-to-r from-[#C67945] to-[#D4AF37] text-white pl-4 pr-5 py-2 rounded-full shadow-md ml-1 hover:scale-105 transition">
                             <div className="relative">
                                 <img src={cart} alt="" className="w-4 md:w-5 h-4 md:h-5" />
                                 {totalItems > 0 && (
-                                    <span className="absolute -top-1.5 -right-1.5 bg-[#FF2A6A] text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
+                                    <span className="absolute -top-1.5 -right-1.5 bg-[#C9834E] text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full font-bold">
                                         {totalItems}
                                     </span>
                                 )}
