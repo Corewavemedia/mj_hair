@@ -18,7 +18,7 @@ const marqueeItems = [
 export default function Marquee() {
     return (
         <motion.div
-            className="w-full max-w-[1100px] mx-auto bg-gradient-to-r from-[#EF2460] to-[#861134] md:rounded-full overflow-hidden will-change-transform"
+            className="w-full max-w-[1100px] mx-auto bg-gradient-to-r from-[#753803] to-[#E08D5A] md:rounded-full overflow-hidden will-change-transform"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 1.2, ease: "easeOut" }}
