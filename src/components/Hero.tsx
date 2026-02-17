@@ -1,6 +1,7 @@
 import { motion, type Variants } from "framer-motion";
 import imgBackground from "../assets/background.svg";
 import imgHero from "../assets/hero-image.svg";
+import medalRibbons from "../assets/icons/medal-ribbons.svg";
 import { IconStar } from "./Icons";
 import { Link } from "react-router-dom";
 
@@ -69,7 +70,7 @@ export default function Hero() {
     return (
         <div className="relative w-full h-max">
             <motion.div
-                className="absolute top-0 left-0 w-full h-full z-0"
+                className="absolute top-0 left-0 w-full h-full -z-0"
                 initial={{ opacity: 0, scale: 1.1 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1.2, ease: "easeOut" }}
@@ -81,7 +82,7 @@ export default function Hero() {
                 />
             </motion.div>
 
-            <section className="z-10 mx-auto md:px-6 h-screen w-full flex flex-col md:flex-row items-center md:pt-24 overflow-hidden md:pb-0 md:gap-0">
+            <section className="z-10 mx-auto md:px-32 h-screen w-full flex flex-col md:flex-row items-center md:pt-24 overflow-hidden md:pb-0 md:gap-0">
 
                 {/* Image Section - Order 1 on Mobile, Order 2 on Desktop */}
                 <div className="relative w-full flex-1 md:h-full md:w-1/2 flex items-center justify-center order-1 md:order-2">
@@ -100,25 +101,19 @@ export default function Hero() {
 
                         {/* UK No. 1 Badge - Floating Left */}
                         <motion.div
-                            className="flex absolute top-[55%] left-[5%] md:top-[40%] md:left-[0%] bg-white/30 backdrop-blur-md px-3 py-2 md:px-4 md:py-3 rounded-2xl shadow-lg items-center gap-2 md:gap-3 scale-90 md:scale-100 origin-left"
+                            className="flex absolute bottom-[25%] md:bottom-[45%] left-1/2 -translate-x-1/2 bg-white/30 backdrop-blur-md px-3 py-2 md:px-4 md:py-3 rounded-2xl shadow-lg items-center gap-2 md:gap-3 scale-90 md:scale-100 origin-center"
                             variants={floatIn}
                             initial="hidden"
                             animate="visible"
                             whileHover={{ scale: 1.05 }}
                         >
-                            <motion.div
-                                className="bg-[#EF2460] rounded-full p-1.5 md:p-2 text-white shadow-md"
-                                animate={{ scale: [1, 1.1, 1] }}
-                                transition={{ duration: 2, repeat: Infinity }}
-                            >
-                                <IconStar />
-                            </motion.div>
+                            <img src={medalRibbons} alt="Medal Ribbons" />
                             <span className="font-bold text-white text-sm md:text-lg font-['Comfortaa']">UK No. 1</span>
                         </motion.div>
 
                         {/* Ratings Badge - Floating Bottom Right (Desktop) */}
                         <motion.div
-                            className="flex absolute bottom-[5%] right-[5%] md:bottom-[20%] md:right-[0%] bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-[20px] md:rounded-[24px] shadow-xl flex-col items-start gap-1 md:gap-2 scale-90 md:scale-100 origin-right"
+                            className="flex absolute bottom-[5%] left-[5%] md:bottom-[20%] md:left-[0%] bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-[20px] md:rounded-[24px] shadow-xl flex-col items-start gap-1 md:gap-2 scale-90 md:scale-100 origin-right"
                             variants={fadeInUp}
                             custom={1}
                         >
@@ -131,10 +126,16 @@ export default function Hero() {
                                 ].map((img, i) => (
                                     <img key={i} src={img} className="w-6 h-6 md:w-8 md:h-8 rounded-full object-cover ring-2 ring-white" alt="" />
                                 ))}
-                                <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-[#EF2460] border-2 border-white flex items-center justify-center text-white text-[8px] md:text-[9px] font-bold">
+                                <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-[#5E4431] border-2 border-white flex items-center justify-center text-white text-[8px] md:text-[9px] font-bold">
                                     15K
                                 </div>
                             </div>
+                        </motion.div>
+                        <motion.div
+                            className="flex absolute bottom-[5%] right-[5%] md:bottom-[20%] md:right-[0%] bg-white/30 backdrop-blur-md p-3 md:p-4 rounded-[20px] md:rounded-[24px] shadow-xl flex-col items-start gap-1 md:gap-2 scale-90 md:scale-100 origin-right"
+                            variants={fadeInUp}
+                            custom={1}
+                        >
                             <div className="flex gap-1">
                                 {[1, 2, 3, 4, 5].map((i) => (
                                     <span key={i} className="text-[#FFD700] drop-shadow-sm"><IconStar /></span>
@@ -153,41 +154,41 @@ export default function Hero() {
                     animate="visible"
                 >
                     <motion.h1
-                        className="font-[ADLaM_Display] text-3xl sm:text-4xl lg:text-6xl leading-[1.2] text-white drop-shadow-lg"
+                        className="font-[ADLaM_Display] text-3xl sm:text-4xl lg:text-6xl leading-[1.2] text-[#5E4431] drop-shadow-lg"
                         variants={fadeInUp}
                     >
                         No. 1{" "}
                         <motion.span
-                            className="inline-block bg-[#EF2460] text-white px-3 py-1 md:px-4 transform -rotate-2 rounded-xl shadow-lg"
+                            className="inline-block bg-[#5E4431]/50 text-white px-3 py-1 md:px-4 transform -rotate-2 rounded-xl shadow-lg"
                             variants={fadeInScale}
                         >
                             Hair
                         </motion.span>
                         <br className="hidden md:block" />{" "}
                         <motion.span
-                            className="inline-block bg-[#EF2460] text-white px-3 py-1 md:px-4 rounded-xl shadow-lg mt-2 md:mt-4"
+                            className="inline-block bg-[#5E4431]/50 text-white px-3 py-1 md:px-4 rounded-xl shadow-lg mt-2 md:mt-4"
                             variants={fadeInScale}
                         >
                             Supplier/Plug
                         </motion.span>{" "}
-                        <span className="text-white">in</span>
+                        <span className="text-[#5E4431]">in</span>
                         <br />
                         United Kingdom
                     </motion.h1>
 
                     <motion.div
-                        className="flex flex-wrap justify-center gap-4 pt-6 md:pt-10 md:justify-start"
+                        className="flex z-2 flex-wrap justify-center gap-4 pt-6 md:pt-10 md:justify-start"
                         variants={slideInLeft}
                     >
                         <Link
                             to="/signup"
-                            className="bg-[#EF2460] text-white px-6 py-3 md:px-8 md:py-4 rounded-2xl font-bold font-['Comfortaa'] text-xs md:text-sm hover:-translate-y-1 transition shadow-lg hover:shadow-xl"
+                            className="bg-[#BD713E] text-white px-6 py-3 md:px-8 md:py-4 rounded-2xl font-bold font-['Comfortaa'] text-xs md:text-sm hover:-translate-y-1 transition shadow-lg hover:shadow-xl"
                         >
                             Get Started
                         </Link>
                         <Link
                             to="/shop"
-                            className="bg-[#EF2460] text-white px-6 py-3 md:px-8 md:py-4 rounded-2xl font-bold font-['Comfortaa'] text-xs md:text-sm hover:-translate-y-1 transition shadow-lg hover:shadow-xl inline-block"
+                            className="bg-[#BD713E] text-white px-6 py-3 md:px-8 md:py-4 rounded-2xl font-bold font-['Comfortaa'] text-xs md:text-sm hover:-translate-y-1 transition shadow-lg hover:shadow-xl inline-block"
                         >
                             Shop Hairs
                         </Link>
