@@ -64,15 +64,15 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({ isOpen
                                 <h3 className="text-3xl font-bold text-text-primary mb-2">{product.productName}</h3>
                                 <div className="flex flex-wrap items-center gap-3">
                                     <span className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1.5 ${product.status === 'published'
-                                            ? 'bg-emerald-100 text-emerald-700'
-                                            : 'bg-gray-100 text-gray-600'
+                                        ? 'bg-emerald-100 text-emerald-700'
+                                        : 'bg-gray-100 text-gray-600'
                                         }`}>
                                         {product.status === 'published' ? <CheckCircle size={14} /> : <AlertCircle size={14} />}
                                         <span className="capitalize">{product.status || 'Draft'}</span>
                                     </span>
                                     <span className={`px-3 py-1 rounded-full text-sm font-medium flex items-center gap-1.5 ${product.stockStatus === 'In Stock'
-                                            ? 'bg-blue-50 text-blue-700'
-                                            : 'bg-orange-50 text-orange-700'
+                                        ? 'bg-blue-50 text-blue-700'
+                                        : 'bg-orange-50 text-orange-700'
                                         }`}>
                                         <Archive size={14} />
                                         {product.stockStatus}
@@ -110,7 +110,7 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({ isOpen
 
                             <div>
                                 <h4 className="text-sm font-semibold text-text-primary uppercase tracking-wider mb-3">Description</h4>
-                                <div className="prose prose-sm max-w-none text-text-secondary leading-relaxed p-2">
+                                <div className="prose prose-sm max-w-none text-text-secondary leading-relaxed p-2 whitespace-pre-wrap">
                                     {product.productDescription || <span className="text-text-secondary italic">No description provided.</span>}
                                 </div>
                             </div>
