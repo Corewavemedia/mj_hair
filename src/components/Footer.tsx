@@ -1,7 +1,7 @@
 import { Mail, MapPin, Phone } from "lucide-react";
 import imgJennyLogo from "../assets/logo.svg";
 import { Link } from "react-router-dom";
-import { siInstagram, siTiktok, siWhatsapp } from 'simple-icons/icons';
+import { siInstagram, siWhatsapp } from 'simple-icons/icons';
 import { useState } from "react";
 import OrderPolicyModal from "./OrderPolicyModal";
 
@@ -10,11 +10,11 @@ export default function Footer() {
     const [isOrderPolicyOpen, setIsOrderPolicyOpen] = useState(false);
 
     return (
-        <footer className="relative mt-0 bg-gradient-to-br from-[#861134] to-[#2d020e] text-white pt-20 pb-10 overflow-hidden font-['Manrope']">
+        <footer className="relative mt-0 bg-[#6A3E1D] text-white pt-20 pb-10 overflow-hidden font-['Manrope']">
             {/* Decorative Elements */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none opacity-20">
-                <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-[#EF2460] rounded-full blur-[120px]" />
-                <div className="absolute bottom-[-10%] left-[-10%] w-[300px] h-[300px] bg-[#EF2460] rounded-full blur-[100px]" />
+                <div className="absolute top-[-20%] right-[-10%] w-[500px] h-[500px] bg-[#A55416] rounded-full blur-[120px]" />
+                <div className="absolute bottom-[-10%] left-[-10%] w-[300px] h-[300px] bg-[#A55416] rounded-full blur-[100px]" />
             </div>
 
             <div className="max-w-[1200px] mx-auto px-6 relative z-10">
@@ -30,7 +30,7 @@ export default function Footer() {
                             placeholder="Enter your email"
                             className="bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder:text-white/40 focus:outline-none focus:border-[#EF2460] transition w-full md:w-[300px]"
                         />
-                        <button className="bg-[#EF2460] hover:bg-[#d01b50] text-white px-6 py-3 rounded-xl font-bold transition shadow-lg hover:shadow-[#EF2460]/50 whitespace-nowrap">
+                        <button className="bg-[#BD713E] text-white px-6 py-3 rounded-xl font-bold transition shadow-lg whitespace-nowrap">
                             Sign Up
                         </button>
                     </form>
@@ -43,22 +43,16 @@ export default function Footer() {
                             <img src={imgJennyLogo} alt="Jenny's Hair" className="h-10 opacity-90" />
                         </Link>
                         <p className="text-white/70 leading-relaxed text-sm">
-                            United Kingdom's No. 1 Supplier for premium hairs and wigs. Elevating confidence, one bundle at a time.
+                            Discover the best wigs and human hair with MJ HAIR PALACE
                         </p>
                         <div className="flex gap-4">
-                            <a href="https://www.instagram.com/jennyshairandwig_coventry" target="_blank" className="w-10 h-10 rounded-full bg-white/5 hover:bg-[#EF2460] flex items-center justify-center transition-all duration-300 border border-white/10 group">
+                            <a href="https://www.instagram.com/mjhairpalace" target="_blank" className="w-10 h-10 rounded-full bg-white/5 hover:bg-[#BD713E] flex items-center justify-center transition-all duration-300 border border-white/10 group">
                                 <svg role="img" viewBox="0 0 24 24" className="w-[18px] h-[18px] fill-white group-hover:fill-white transition-colors" xmlns="http://www.w3.org/2000/svg">
                                     <title>{siInstagram.title}</title>
                                     <path d={siInstagram.path} />
                                 </svg>
                             </a>
-                            <a href="https://www.tiktok.com/@jennyshair_and_wig_uk" target="_blank" className="w-10 h-10 rounded-full bg-white/5 hover:bg-[#EF2460] flex items-center justify-center transition-all duration-300 border border-white/10 group">
-                                <svg role="img" viewBox="0 0 24 24" className="w-[18px] h-[18px] fill-white group-hover:fill-white transition-colors" xmlns="http://www.w3.org/2000/svg">
-                                    <title>{siTiktok.title}</title>
-                                    <path d={siTiktok.path} />
-                                </svg>
-                            </a>
-                            <a href="https://wa.me/447404699950" target="_blank" className="w-10 h-10 rounded-full bg-white/5 hover:bg-[#EF2460] flex items-center justify-center transition-all duration-300 border border-white/10 group">
+                            <a href="https://wa.me/447407106707" target="_blank" className="w-10 h-10 rounded-full bg-white/5 hover:bg-[#BD713E] flex items-center justify-center transition-all duration-300 border border-white/10 group">
                                 <svg role="img" viewBox="0 0 24 24" className="w-[18px] h-[18px] fill-white group-hover:fill-white transition-colors" xmlns="http://www.w3.org/2000/svg">
                                     <title>{siWhatsapp.title}</title>
                                     <path d={siWhatsapp.path} />
@@ -71,27 +65,27 @@ export default function Footer() {
                     <div>
                         <h4 className="font-['Comfortaa'] text-lg font-bold mb-6">Shop</h4>
                         <ul className="space-y-4 text-white/70 text-sm">
-                            <li><Link to="/shop" className="hover:text-[#EF2460] transition">All Products</Link></li>
-                            <li><Link to="/shop?category=wigs" className="hover:text-[#EF2460] transition">Wigs</Link></li>
-                            <li><Link to="/shop?category=bundles" className="hover:text-[#EF2460] transition">Bundles</Link></li>
-                            <li><Link to="/shop?category=accessories" className="hover:text-[#EF2460] transition">Accessories</Link></li>
+                            <li><Link to="/shop" className="hover:text-[#BD713E] transition">All Products</Link></li>
+                            <li><Link to="/shop?category=wigs" className="hover:text-[#BD713E] transition">Wigs</Link></li>
+                            <li><Link to="/shop?category=bundles" className="hover:text-[#BD713E] transition">Bundles</Link></li>
+                            <li><Link to="/shop?category=accessories" className="hover:text-[#BD713E] transition">Accessories</Link></li>
                         </ul>
                     </div>
 
                     <div>
                         <h4 className="font-['Comfortaa'] text-lg font-bold mb-6">Company</h4>
                         <ul className="space-y-4 text-white/70 text-sm">
-                            <li><Link to="/about" className="hover:text-[#EF2460] transition">About Us</Link></li>
-                            <li><Link to="/contact" className="hover:text-[#EF2460] transition">Contact</Link></li>
+                            <li><Link to="/about" className="hover:text-[#BD713E] transition">About Us</Link></li>
+                            <li><Link to="/contact" className="hover:text-[#BD713E] transition">Contact</Link></li>
                             <li>
                                 <button
                                     onClick={() => setIsOrderPolicyOpen(true)}
-                                    className="hover:text-[#EF2460] transition text-left"
+                                    className="hover:text-[#BD713E] transition text-left"
                                 >
                                     Order Policy and Return Guide
                                 </button>
                             </li>
-                            <li><Link to="/terms" className="hover:text-[#EF2460] transition">Terms & Privacy</Link></li>
+                            <li><Link to="/terms" className="hover:text-[#BD713E] transition">Terms & Privacy</Link></li>
                         </ul>
                     </div>
 
@@ -100,16 +94,16 @@ export default function Footer() {
                         <h4 className="font-['Comfortaa'] text-lg font-bold mb-6">Contact</h4>
                         <ul className="space-y-6 text-white/70 text-sm">
                             <li className="flex flex-col">
-                                <Phone size={16} className="text-[#EF2460]" />
-                                <span>+447404699950</span>
+                                <Phone size={16} className="text-[#BD713E]" />
+                                <span>+447407106707</span>
                             </li>
                             <li className="flex flex-col">
-                                <Mail size={16} className="text-[#EF2460]" />
-                                <a href="mailto:jennyshairandwig@gmail.com" className="hover:text-[#EF2460] transition">jennyshairandwig@gmail.com</a>
+                                <Mail size={16} className="text-[#BD713E]" />
+                                <a href="mailto:mjhairpalace@gmail.com" className="hover:text-[#BD713E] transition">mjhairpalace@gmail.com</a>
                             </li>
                             <li className="flex flex-col">
-                                <MapPin size={16} className="text-[#EF2460]" />
-                                <span>Cv2 3nq, Topcross avenue, Coventry</span>
+                                <MapPin size={16} className="text-[#BD713E]" />
+                                <span>9 Mortimer street, Leominster, Hr68pg, Herefordshire</span>
                             </li>
                         </ul>
                     </div>
@@ -117,7 +111,7 @@ export default function Footer() {
 
                 {/* Footer Bottom */}
                 <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-white/50">
-                     <a href="https://wa.me/2349120014546" target="_blank" rel="noopener noreferrer" className="hover:text-[#EF2460] transition"><p>© Designed by corewave media</p></a>
+                     <a href="https://wa.me/2349120014546" target="_blank" rel="noopener noreferrer" className="hover:text-[#BD713E] transition"><p>© Designed by corewave media</p></a>
                     <div className="flex gap-6 items-center">
                         <div className="flex gap-2">
                             <span className="bg-white/10 px-2 py-1 rounded text-xs text-white/80">Visa</span>

@@ -55,10 +55,10 @@ export default function Testimonials() {
     };
 
     return (
-        <section className="bg-[#EFDCD5] pb-12">
+        <section className="pb-12">
             <div className="max-w-[1400px] mx-auto px-6">
                 <motion.h2
-                    className="font-['Cambay'] font-bold text-5xl text-[#FF2A6A] mb-12 text-center"
+                    className="font-['Cambay'] font-bold text-5xl text-[#C9834E] mb-12 text-center"
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -148,12 +148,12 @@ export default function Testimonials() {
                 </motion.div>
 
                 {/* Slider Dots */}
-                <div className="flex justify-center gap-2 mt-16 z-20">
+                <div className="flex lg:hidden justify-center gap-2 mt-16 z-20">
                     {testimonials.map((_, idx) => (
                         <motion.div
                             key={idx}
                             onClick={() => handleDotClick(idx)}
-                            className={`w-20 h-2 rounded-full cursor-pointer shadow-sm transition-all duration-300 ${currentSlide === idx ? 'bg-[#EF2460]' : 'bg-gray-300'
+                            className={`w-20 h-2 rounded-full cursor-pointer shadow-sm transition-all duration-300 ${currentSlide === idx ? 'bg-[#C9834E]' : 'bg-gray-300'
                                 }`}
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.95 }}

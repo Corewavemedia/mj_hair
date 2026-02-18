@@ -28,7 +28,7 @@ export default function ShopSection() {
     });
 
     return (
-        <section id="shop" className="bg-[#EFDCD5] mx-auto px-6 py-32">
+        <section id="shop" className="mx-auto px-6 py-32">
             <div className="flex flex-col lg:flex-row gap-20">
                 {/* Sidebar - Hidden on Mobile */}
                 <motion.div
@@ -38,7 +38,7 @@ export default function ShopSection() {
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
                 >
-                    <h2 className="font-['Cambay'] font-bold text-5xl text-[#EF2460]">
+                    <h2 className="font-['Cambay'] font-bold text-5xl text-[#5E4431]">
                         Categories
                     </h2>
                     <div className="flex flex-col gap-4 font-['Comfortaa'] font-bold text-xl text-gray-400">
@@ -56,12 +56,12 @@ export default function ShopSection() {
                                         <div key={idx} className="relative">
                                             {isActive && (
                                                 <motion.div
-                                                    className="absolute -left-[26px] top-0 bottom-0 w-1 bg-[#EF2460] rounded-full shadow-[0_0_10px_#EF2460]"
+                                                    className="absolute -left-[26px] top-0 bottom-0 w-1 bg-[#C9834E] rounded-full shadow-[0_0_10px_#C9834E]"
                                                     layoutId="activeCategoryIndicator"
                                                 />
                                             )}
                                             <motion.button
-                                                className={`text-left transition-all ${isActive ? "text-[#EF2460]" : "hover:text-[#EF2460]"}`}
+                                                className={`text-left transition-all ${isActive ? "text-white" : "hover:text-[#C9834E]"}`}
                                                 whileHover={{ x: 10 }}
                                                 onClick={() => setActiveCategory(category.name)}
                                             >
@@ -81,21 +81,15 @@ export default function ShopSection() {
                 {/* Product Grid */}
                 <div className="w-full lg:w-3/4">
                     <motion.div
-                        className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-8 border-b-2 border-gray-100 pb-6"
+                        className="mb-8"
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ duration: 0.6 }}
                     >
-                        <h2 className="font-['Poppins'] font-semibold text-4xl text-[#EF2460] mb-4 lg:mb-0">
+                        <h2 className="font-['Poppins'] text-center font-semibold text-4xl text-[#C9834E] mb-4 lg:mb-0">
                             Start Shopping
                         </h2>
-                        <Link to="/shop" className="hidden lg:flex font-['Cambay'] font-bold text-[#EF2460] text-xl hover:text-[#8C1434] transition items-center gap-2 group">
-                            See All{" "}
-                            <span className="group-hover:translate-x-1 transition-transform">
-                                <IconArrowRight />
-                            </span>
-                        </Link>
                     </motion.div>
 
                     {/* Mobile Category Dropdown and Search */}
@@ -119,7 +113,7 @@ export default function ShopSection() {
                                     animate={{ rotate: isDropdownOpen ? 180 : 0 }}
                                     transition={{ duration: 0.3 }}
                                 >
-                                    <svg className="w-5 h-5 text-[#EF2460]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg className="w-5 h-5 text-[#C9834E]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                                     </svg>
                                 </motion.div>
@@ -165,7 +159,7 @@ export default function ShopSection() {
                                 placeholder="Search for hair products..."
                                 className="w-full px-6 py-4 pr-12 rounded-2xl bg-white border border-gray-100 focus:border-[#EF2460] focus:ring-2 focus:ring-[#EF2460]/10 focus:outline-none font-['Manrope'] text-gray-700 placeholder-gray-400 shadow-sm transition-all"
                             />
-                            <button className="absolute right-3 top-1/2 -translate-y-1/2 bg-[#EF2460] text-white p-2.5 rounded-xl hover:bg-[#C91A4B] transition shadow-md group-focus-within:scale-110">
+                            <button className="absolute right-3 top-1/2 -translate-y-1/2 bg-[#C9834E] text-white p-2.5 rounded-xl hover:bg-[#C91A4B] transition shadow-md group-focus-within:scale-110">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                                 </svg>
@@ -209,6 +203,12 @@ export default function ShopSection() {
                             )}
                         </motion.div>
                     )}
+                    <Link to="/shop" className="flex float-right font-['Cambay'] font-bold text-[#C9834E] text-xl hover:text-[#8C1434] transition items-center gap-2 group">
+                        See All{" "}
+                        <span className="group-hover:translate-x-1 transition-transform">
+                            <IconArrowRight />
+                        </span>
+                    </Link>
                 </div>
             </div>
         </section>
