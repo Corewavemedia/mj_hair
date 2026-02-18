@@ -69,10 +69,10 @@ export default defineSchema({
     }),
 
     customers: defineTable({
-        clerkId: v.string(),
-        firstName: v.string(),
-        lastName: v.string(),
-        email: v.string(),
+        clerkId: v.optional(v.string()),
+        firstName: v.optional(v.string()),
+        lastName: v.optional(v.string()),
+        email: v.optional(v.string()),
         username: v.optional(v.string()),
         phone: v.optional(v.string()),
         address: v.optional(v.object({
@@ -86,7 +86,10 @@ export default defineSchema({
     }).index("by_clerkId", ["clerkId"]),
 
     orders: defineTable({
-        clerkId: v.string(),
+        clerkId: v.optional(v.string()),
+        customerName: v.optional(v.string()),
+        customerEmail: v.optional(v.string()),
+        customerPhone: v.optional(v.string()),
         items: v.array(v.object({
             productId: v.id("products"),
             quantity: v.number(),

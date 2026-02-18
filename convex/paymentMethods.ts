@@ -26,9 +26,6 @@ export const addPaymentMethod = mutation({
         const identity = await ctx.auth.getUserIdentity();
         if (!identity) throw new Error("Unauthenticated");
 
-        // Make others non-default if this is the first one? Or just add it.
-        // For simplicity, just add.
-
         await ctx.db.insert("paymentMethods", {
             clerkId: identity.subject,
             type: args.type,

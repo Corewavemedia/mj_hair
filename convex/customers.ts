@@ -1,9 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 
-/**
- * Get the current customer based on the authenticated Clerk user.
- */
 export const getCurrentCustomer = query({
     handler: async (ctx) => {
         const identity = await ctx.auth.getUserIdentity();

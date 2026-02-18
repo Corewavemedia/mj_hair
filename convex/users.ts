@@ -1,18 +1,5 @@
-import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-/**
- * Insert or update the user in a Convex table then return the document's ID.
- *
- * The `UserIdentity.tokenIdentifier` string is a stable and unique value we use
- * to look up identities.
- *
- * Keep in mind that `UserIdentity` has a number of optional fields, the
- * presence of which depends on the identity provider chosen. It's up to the
- * application developer to determine which ones are available and to decide
- * which of those need to be persisted. For Clerk the fields are determined
- * by the JWT template's Claims.
- */
 export const store = mutation({
     args: {},
     handler: async (ctx) => {

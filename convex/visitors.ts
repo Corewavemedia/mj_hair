@@ -2,18 +2,6 @@ import { mutation, query } from "./_generated/server";
 import { v } from "convex/values";
 import { checkAdmin } from "./admin";
 
-/**
- * Identify a visitor by hashing their IP (handled in action usually) or just use a client-generated ID + IP string if we don't have actions enabled for IP.
- * For simplicity and privacy without Actions, we'll trust a client-generated sessionId or fingerprint, 
- * but the prompt asks for "ipHash".
- * 
- * Since we can't easily get IP in a pure mutation without an Action or HTTP endpoint, 
- * we will accept an `ipHash` passed from the client (which the client can generate via a specialized service or we simulate it).
- * 
- * ACTUALLY: The prompt asks to "Capture... user agent...". 
- * We will store what the client sends.
- */
-
 export const trackVisit = mutation({
     args: {
         ipHash: v.string(), // Client will send a fingerprint/hash
