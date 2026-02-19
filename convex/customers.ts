@@ -26,9 +26,11 @@ export const updateCustomer = mutation({
         username: v.optional(v.string()),
         phone: v.string(),
         address: v.object({
-            street: v.string(),
+            fullName: v.string(),
+            line1: v.string(),
+            line2: v.optional(v.string()),
             city: v.string(),
-            zipCode: v.string(),
+            postalCode: v.string(),
             country: v.string(),
         }),
     },

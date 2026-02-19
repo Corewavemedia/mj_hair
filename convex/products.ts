@@ -190,4 +190,3 @@ export const deleteProduct = mutation({
         await ctx.db.delete(args.id);
     },
 });
-

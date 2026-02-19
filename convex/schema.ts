@@ -75,19 +75,29 @@ export default defineSchema({
         email: v.optional(v.string()),
         username: v.optional(v.string()),
         phone: v.optional(v.string()),
-        address: v.optional(v.object({
-            street: v.string(),
-            city: v.string(),
-            zipCode: v.string(),
-            country: v.string(),
-        })),
+        address: v.optional(v.union(
+            v.object({
+                fullName: v.string(),
+                line1: v.string(),
+                line2: v.optional(v.string()),
+                city: v.string(),
+                postalCode: v.string(),
+                country: v.string(),
+            }),
+            v.object({
+                street: v.string(),
+                city: v.string(),
+                zipCode: v.string(),
+                country: v.string(),
+            })
+        )),
         orders: v.array(v.id("orders")),
         createdAt: v.number(),
     }).index("by_clerkId", ["clerkId"]),
 
     orders: defineTable({
         clerkId: v.optional(v.string()),
-        customerName: v.optional(v.string()),
+        customerName: v.optional(v.string()), // Kept for backward compat or easy access
         customerEmail: v.optional(v.string()),
         customerPhone: v.optional(v.string()),
         items: v.array(v.object({
@@ -97,9 +107,20 @@ export default defineSchema({
             name: v.string(),
         })),
         totalPrice: v.number(),
+        shippingCost: v.optional(v.number()), // New field
         orderStatus: v.string(),
         paymentStatus: v.string(),
-        shippingAddress: v.string(),
+        shippingAddress: v.union(
+            v.string(),
+            v.object({ // Changed to object
+                fullName: v.string(),
+                line1: v.string(),
+                line2: v.optional(v.string()),
+                city: v.string(),
+                postalCode: v.string(),
+                country: v.string(),
+            })
+        ),
         paymentIntentId: v.optional(v.string()),
         sessionId: v.optional(v.string()),
         createdAt: v.number(),
@@ -114,7 +135,7 @@ export default defineSchema({
             name: v.string(),
         })),
         totalPrice: v.number(),
-        shippingAddress: v.string(),
+        shippingAddress: v.string(), // Keep as string for now or update if referenced? It's internal.
         sessionId: v.string(),
         status: v.union(v.literal("pending"), v.literal("completed"), v.literal("expired")),
     }).index("by_sessionId", ["sessionId"]),

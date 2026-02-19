@@ -68,7 +68,14 @@ export const createOrder = mutation({
             name: v.string(),
         })),
         totalPrice: v.number(),
-        shippingAddress: v.string(),
+        shippingAddress: v.object({
+            fullName: v.string(),
+            line1: v.string(),
+            line2: v.optional(v.string()),
+            city: v.string(),
+            postalCode: v.string(),
+            country: v.string(),
+        }),
         paymentIntentId: v.string(),
         customerName: v.string(),
         customerEmail: v.string(),
@@ -78,9 +85,14 @@ export const createOrder = mutation({
         const identity = await ctx.auth.getUserIdentity();
         const clerkId = identity?.subject || null; // Optional: Link to user if logged in
 
-        const { items, totalPrice, shippingAddress, paymentIntentId, customerName, customerEmail, customerPhone } = args;
+        const { items, shippingAddress, paymentIntentId, customerName, customerEmail, customerPhone } = args;
 
         const phone = customerPhone || "";
+
+        // Calculate shipping cost server-side
+        const shippingCost = shippingAddress.country === "GB" ? 5 : 35;
+        const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const finalTotal = subtotal + shippingCost;
 
         // 1. Create Order
         const orderId = await ctx.db.insert("orders", {
@@ -89,7 +101,8 @@ export const createOrder = mutation({
             customerEmail,
             customerPhone: phone,
             items,
-            totalPrice,
+            totalPrice: finalTotal,
+            shippingCost,
             orderStatus: "pending",
             paymentStatus: "paid",
             shippingAddress,
@@ -107,12 +120,12 @@ export const createOrder = mutation({
                 .first();
         }
         if (existingCustomer) {
-            // Start of Selection
             const currentOrders = existingCustomer.orders || [];
             await ctx.db.patch(existingCustomer._id, {
                 orders: [...currentOrders, orderId],
+                // Update address if it's newer? Maybe let user decide in dashboard.
+                // For now, let's just link the order.
             });
-            // End of Selection
         } else {
             // Create new customer record for this guest/user
             const nameParts = customerName.split(" ");
@@ -124,11 +137,12 @@ export const createOrder = mutation({
                 phone: phone,
                 username: customerEmail.split("@")[0],
                 orders: [orderId],
+                address: shippingAddress, // Store the address for new customers
                 createdAt: Date.now(),
             });
         }
 
-        return orderId;
+        return { orderId, finalTotal, shippingCost };
     },
 });
 
@@ -142,7 +156,14 @@ export const createOrderInternal = internalMutation({
             name: v.string(),
         })),
         totalPrice: v.number(),
-        shippingAddress: v.string(),
+        shippingAddress: v.object({
+            fullName: v.string(),
+            line1: v.string(),
+            line2: v.optional(v.string()),
+            city: v.string(),
+            postalCode: v.string(),
+            country: v.string(),
+        }),
         sessionId: v.string(),
         paymentIntentId: v.string(),
         customerName: v.string(),
@@ -150,7 +171,7 @@ export const createOrderInternal = internalMutation({
         customerPhone: v.string(),
     },
     handler: async (ctx, args) => {
-        const { clerkId, items, totalPrice, shippingAddress, sessionId, paymentIntentId, customerName, customerEmail, customerPhone } = args;
+        const { clerkId, items, shippingAddress, sessionId, paymentIntentId, customerName, customerEmail, customerPhone } = args;
 
         // Idempotency: Check if order already exists for this session
         const existing = await ctx.db
@@ -162,6 +183,11 @@ export const createOrderInternal = internalMutation({
             return existing._id;
         }
 
+        // Calculate shipping cost server-side
+        const shippingCost = shippingAddress.country === "GB" ? 5 : 35;
+        const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const finalTotal = subtotal + shippingCost;
+
         // 1. Create Order
         const orderId = await ctx.db.insert("orders", {
             clerkId,
@@ -169,7 +195,8 @@ export const createOrderInternal = internalMutation({
             customerEmail,
             customerPhone,
             items,
-            totalPrice,
+            totalPrice: finalTotal,
+            shippingCost,
             orderStatus: "pending",
             paymentStatus: "paid",
             shippingAddress,
@@ -219,6 +246,7 @@ export const createOrderInternal = internalMutation({
                 phone,
                 username: email.split("@")[0],
                 orders: [orderId],
+                address: shippingAddress,
                 createdAt: Date.now(),
             });
         }
