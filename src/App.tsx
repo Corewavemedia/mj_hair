@@ -24,24 +24,18 @@ import { AdminRoute } from "./admin/components/AdminRoute";
 import { ThemeProvider } from "./admin/context/ThemeContext";
 import { AnalyticsProvider } from "./admin/context/AnalyticsContext";
 
+import ScrollToTop from "./components/ScrollToTop";
+
 export default function App() {
     return (
         <CartProvider>
             <Router>
+                <ScrollToTop />
                 <div className="font-['Manrope',sans-serif]">
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/cart" element={<CartPage />} />
-                        <Route path="/checkout" element={
-                            <>
-                                <SignedIn>
-                                    <CheckoutPage />
-                                </SignedIn>
-                                <SignedOut>
-                                    <RedirectToSignIn />
-                                </SignedOut>
-                            </>
-                        } />
+                        <Route path="/checkout" element={<CheckoutPage />} />
                         <Route path="/dashboard" element={
                             <>
                                 <SignedIn>
