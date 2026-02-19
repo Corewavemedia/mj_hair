@@ -1,5 +1,6 @@
-import React from 'react';
-import { X, Package, Calendar, Tag, Archive, CheckCircle, AlertCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, Package, Calendar, Tag, Archive, CheckCircle, AlertCircle, Share2 } from 'lucide-react';
+import { ShareProductModal } from './ShareProductModal';
 import type { Product } from '../../types/analytics';
 
 interface ProductDetailsModalProps {
@@ -9,6 +10,8 @@ interface ProductDetailsModalProps {
 }
 
 export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({ isOpen, onClose, product }) => {
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+
     if (!isOpen || !product) return null;
 
     return (
@@ -20,12 +23,21 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({ isOpen
                         <h2 className="text-2xl font-bold text-text-primary">Product Details</h2>
                         <p className="text-sm text-text-secondary mt-1">ID: {product._id}</p>
                     </div>
-                    <button
-                        onClick={onClose}
-                        className="p-2 hover:bg-text-primary/15 rounded-md transition-colors text-text-secondary hover:text-text-primary"
-                    >
-                        <X size={24} />
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setIsShareModalOpen(true)}
+                            className="p-2 hover:bg-green-50 rounded-md transition-colors text-text-secondary hover:text-green-600"
+                            title="Share Product"
+                        >
+                            <Share2 size={24} />
+                        </button>
+                        <button
+                            onClick={onClose}
+                            className="p-2 hover:bg-text-primary/15 rounded-md transition-colors text-text-secondary hover:text-text-primary"
+                        >
+                            <X size={24} />
+                        </button>
+                    </div>
                 </div>
 
                 <div className="p-8">
@@ -166,6 +178,11 @@ export const ProductDetailsModal: React.FC<ProductDetailsModalProps> = ({ isOpen
                     </div>
                 </div>
             </div>
+            <ShareProductModal
+                isOpen={isShareModalOpen}
+                onClose={() => setIsShareModalOpen(false)}
+                product={product}
+            />
         </div>
     );
 };
