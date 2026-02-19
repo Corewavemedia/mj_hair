@@ -64,7 +64,7 @@ export default function UserOrders({ orders, stats }: any) {
             </div>
 
             {/* Promo Banner */}
-            <div className="bg-gradient-to-r from-[#861134] to-[#EF2460] rounded-[24px] py-6 px-2 lg:px-16 text-white relative overflow-hidden shadow-lg">
+            <div className="bg-gradient-to-r from-[#5E3014] to-[#BD713E] rounded-[24px] py-6 px-2 lg:px-16 text-white relative overflow-hidden shadow-lg">
                 <div className="flex items-center gap-4 justify-between">
                     <div className="w-16 h-16 md:w-24 md:h-24 rounded-xl shadow-sm overflow-hidden">
                         <img src={promotionImg} alt="" className="object-cover" />
@@ -72,7 +72,7 @@ export default function UserOrders({ orders, stats }: any) {
                     <h2 className="text-lg lg:text-2xl font-[ADLaM_Display] leading-tight">
                         Get Quality Hairs Starting From £200
                     </h2>
-                    <Link to="/shop" className="bg-[#56041c] text-white text-center px-2.5 md:px-6 py-1 md:py-2.5 rounded-xl md:rounded-full text-xs md:text-sm font-bold border border-white/20 hover:bg-black/40 transition inline-block">
+                    <Link to="/shop" className="bg-[#3E200D] text-white text-center px-2.5 md:px-6 py-1 md:py-2.5 rounded-xl md:rounded-full text-xs md:text-sm font-bold border border-white/20 hover:bg-black/40 transition inline-block">
                         Shop Now
                     </Link>
                 </div>
@@ -101,7 +101,7 @@ export default function UserOrders({ orders, stats }: any) {
                         </thead>
                         <tbody className="text-sm">
                             {currentOrders.map((order: any, i: number) => (
-                                <tr key={i} className="group hover:bg-pink-50/50 transition-colors">
+                                <tr key={i} className="group hover:bg-[#BD713E]/5 transition-colors">
                                     <td className="py-4 pl-4">
                                         <div className="flex flex-col">
                                             {order.items.map((item: any, idx: number) => (
@@ -136,7 +136,7 @@ export default function UserOrders({ orders, stats }: any) {
                         <button
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
-                            className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-gray-600 hover:text-[#EF2460] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-gray-600 hover:text-[#BD713E] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             <ChevronLeft size={16} />
                             Previous
@@ -149,7 +149,7 @@ export default function UserOrders({ orders, stats }: any) {
                                     onClick={() => handlePageChange(page)}
                                     className={`w-8 h-8 rounded-full text-xs font-bold transition-all flex items-center justify-center
                                         ${currentPage === page
-                                            ? "bg-[#EF2460] text-white shadow-md shadow-pink-200"
+                                            ? "bg-[#BD713E] text-white shadow-md shadow-[#BD713E]/20"
                                             : "text-gray-600 hover:bg-gray-100"
                                         }`}
                                 >
@@ -161,7 +161,7 @@ export default function UserOrders({ orders, stats }: any) {
                         <button
                             onClick={() => handlePageChange(currentPage + 1)}
                             disabled={currentPage === totalPages}
-                            className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-gray-600 hover:text-[#EF2460] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="flex items-center gap-2 px-4 py-2 text-sm font-bold text-gray-600 hover:text-[#BD713E] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         >
                             Next
                             <ChevronRight size={16} />

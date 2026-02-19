@@ -87,7 +87,7 @@ export default function PersonalData() {
                         value={formData.username}
                         onChange={handleChange}
                         placeholder="@username"
-                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#EF2460] focus:ring-1 focus:ring-[#EF2460] outline-none transition font-bold text-gray-700"
+                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#BD713E] focus:ring-1 focus:ring-[#BD713E] outline-none transition font-bold text-gray-700"
                     />
                 </div>
 
@@ -99,7 +99,7 @@ export default function PersonalData() {
                             name="firstName"
                             value={formData.firstName}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#EF2460] focus:ring-1 focus:ring-[#EF2460] outline-none transition font-bold text-gray-700"
+                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#BD713E] focus:ring-1 focus:ring-[#BD713E] outline-none transition font-bold text-gray-700"
                         />
                     </div>
                     <div className="flex-1 space-y-2">
@@ -109,7 +109,7 @@ export default function PersonalData() {
                             name="lastName"
                             value={formData.lastName}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#EF2460] focus:ring-1 focus:ring-[#EF2460] outline-none transition font-bold text-gray-700"
+                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#BD713E] focus:ring-1 focus:ring-[#BD713E] outline-none transition font-bold text-gray-700"
                         />
                     </div>
                 </div>
@@ -133,7 +133,7 @@ export default function PersonalData() {
                             value={formData.phone}
                             onChange={handleChange}
                             placeholder="+44 7911 123456"
-                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#EF2460] focus:ring-1 focus:ring-[#EF2460] outline-none transition font-bold text-gray-700"
+                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#BD713E] focus:ring-1 focus:ring-[#BD713E] outline-none transition font-bold text-gray-700"
                         />
                     </div>
                 </div>
@@ -145,7 +145,7 @@ export default function PersonalData() {
                         name="address"
                         value={formData.address}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#EF2460] focus:ring-1 focus:ring-[#EF2460] outline-none transition font-bold text-gray-700"
+                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#BD713E] focus:ring-1 focus:ring-[#BD713E] outline-none transition font-bold text-gray-700"
                     />
                 </div>
 
@@ -157,7 +157,7 @@ export default function PersonalData() {
                             name="city"
                             value={formData.city}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#EF2460] focus:ring-1 focus:ring-[#EF2460] outline-none transition font-bold text-gray-700"
+                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#BD713E] focus:ring-1 focus:ring-[#BD713E] outline-none transition font-bold text-gray-700"
                         />
                     </div>
                     <div className="flex-1 space-y-2">
@@ -167,7 +167,7 @@ export default function PersonalData() {
                             name="zip"
                             value={formData.zip}
                             onChange={handleChange}
-                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#EF2460] focus:ring-1 focus:ring-[#EF2460] outline-none transition font-bold text-gray-700"
+                            className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 focus:border-[#BD713E] focus:ring-1 focus:ring-[#BD713E] outline-none transition font-bold text-gray-700"
                         />
                     </div>
                 </div>
@@ -176,7 +176,7 @@ export default function PersonalData() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="bg-[#EF2460] text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-[#d91e56] transition disabled:opacity-50"
+                        className="bg-[#BD713E] text-white px-8 py-3 rounded-xl font-bold shadow-lg hover:bg-[#A55F2C] transition disabled:opacity-50"
                     >
                         {loading ? "Saving..." : "Save Changes"}
                     </button>

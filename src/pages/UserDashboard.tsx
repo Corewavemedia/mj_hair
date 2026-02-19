@@ -84,7 +84,7 @@ export default function UserDashboard() {
     };
 
     return (
-        <div className="min-h-screen bg-[#EFDCD5] pt-8 font-['Manrope',sans-serif]">
+        <div className="min-h-screen bg-[#FFF8F3] pt-8 font-['Manrope',sans-serif]">
             <Navbar />
             <div className="flex flex-col lg:flex-row gap-8 p-4 lg:p-8 mx-auto">
                 {/* DESKTOP SIDEBAR - Hidden on Mobile */}
@@ -96,17 +96,17 @@ export default function UserDashboard() {
                                 alt="Profile"
                                 className="w-24 h-24 rounded-full border-4 border-white shadow-lg mx-auto object-cover"
                             />
-                            <div className="absolute bottom-0 right-0 bg-[#EF2460] p-1.5 rounded-full border-2 border-white">
+                            <div className="absolute bottom-0 right-0 bg-[#BD713E] p-1.5 rounded-full border-2 border-white">
                                 <User className="w-3 h-3 text-white" />
                             </div>
                         </div>
                         <h2 className="text-xl font-bold text-gray-900">{displayName}</h2>
                         <p className="text-gray-500 text-sm mb-6">{displayEmail}</p>
 
-                        <div className="bg-pink-50 rounded-xl p-4 text-left mb-6">
+                        <div className="bg-[#BD713E]/10 rounded-xl p-4 text-left mb-6">
                             <div className="flex justify-between items-center mb-2">
                                 <span className="font-bold text-gray-800 text-sm">My Orders</span>
-                                <button onClick={() => setActiveTab("orders")} className="text-[#EF2460] text-xs font-bold hover:underline">See All</button>
+                                <button onClick={() => setActiveTab("orders")} className="text-[#BD713E] text-xs font-bold hover:underline">See All</button>
                             </div>
                             {orders && orders.length > 0 && orders[0] ? (
                                 <div className="bg-white rounded-lg p-3 flex items-center justify-between shadow-sm">
@@ -114,10 +114,10 @@ export default function UserDashboard() {
                                         <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-xs">📦</div>
                                         <div>
                                             <p className="text-xs font-bold text-gray-900 truncate max-w-[100px]">{orders[0].items[0]?.name || "Order"}</p>
-                                            <p className="text-[10px] text-[#EF2460] font-bold">£ {orders[0].totalPrice.toFixed(2)}</p>
+                                            <p className="text-[10px] text-[#BD713E] font-bold">£ {orders[0].totalPrice.toFixed(2)}</p>
                                         </div>
                                     </div>
-                                    <span className="bg-[#EF2460] text-white text-[10px] px-2 py-1 rounded-full capitalize">{orders[0].orderStatus}</span>
+                                    <span className="bg-[#BD713E] text-white text-[10px] px-2 py-1 rounded-full capitalize">{orders[0].orderStatus}</span>
                                 </div>
                             ) : (
                                 <div className="text-xs text-gray-500 text-center py-2">No active orders</div>
@@ -137,13 +137,13 @@ export default function UserDashboard() {
                                         href="/admin"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        className="flex items-center justify-between p-4 rounded-xl cursor-pointer transition hover:bg-gray-50 mt-2 border border-dashed border-[#EF2460]/30"
+                                        className="flex items-center justify-between p-4 rounded-xl cursor-pointer transition hover:bg-gray-50 mt-2 border border-dashed border-[#BD713E]/30"
                                     >
-                                        <div className="flex items-center gap-3 text-[#EF2460]">
+                                        <div className="flex items-center gap-3 text-[#BD713E]">
                                             <LayoutDashboard size={18} />
                                             <span className="text-sm font-bold">Admin Dashboard</span>
                                         </div>
-                                        <ArrowRight size={16} className="text-[#EF2460]" />
+                                        <ArrowRight size={16} className="text-[#BD713E]" />
                                     </a>
                                 )}
                             </div>
@@ -162,7 +162,7 @@ export default function UserDashboard() {
                     <div className="bg-white rounded-[24px] p-6 shadow-sm flex items-center gap-4">
                         <div className="relative shrink-0">
                             <img src={user?.imageUrl} alt="Profile" className="w-16 h-16 rounded-full border-2 border-white shadow-md object-cover" />
-                            <div className="absolute bottom-0 right-0 bg-[#EF2460] p-1 rounded-full border-2 border-white">
+                            <div className="absolute bottom-0 right-0 bg-[#BD713E] p-1 rounded-full border-2 border-white">
                                 <User className="w-2.5 h-2.5 text-white" />
                             </div>
                         </div>
@@ -188,7 +188,7 @@ export default function UserDashboard() {
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`flex items-center gap-2 px-4 py-2.5 rounded-full whitespace-nowrap text-sm font-bold transition-all shadow-sm border border-transparent
                                 ${activeTab === tab.id
-                                        ? "bg-[#EF2460] text-white shadow-[#EF2460]/20"
+                                        ? "bg-[#BD713E] text-white shadow-[#BD713E]/20"
                                         : "bg-white text-gray-600 hover:bg-gray-50 border-gray-100"}`}
                             >
                                 {tab.icon}
@@ -205,9 +205,9 @@ export default function UserDashboard() {
                                 <button
                                     className="flex items-center gap-2 px-4 py-2.5 rounded-full whitespace-nowrap text-sm font-bold transition-all border border-transparent bg-white text-gray-600 hover:bg-gray-50 border-gray-100"
                                 >
-                                   <LayoutDashboard size={18} />
+                                    <LayoutDashboard size={18} />
                                     <span className="text-sm font-bold">Admin Dashboard</span>
-                                    <ArrowRight size={16} className="text-[#EF2460]" />
+                                    <ArrowRight size={16} className="text-[#BD713E]" />
                                 </button>
                             </a>
                         )}
@@ -228,10 +228,10 @@ function SidebarItem({ icon, label, active = false, onClick }: { icon: any, labe
     return (
         <div
             onClick={onClick}
-            className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition ${active ? 'bg-pink-50' : 'hover:bg-gray-50'}`}
+            className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition ${active ? 'bg-[#BD713E]/10' : 'hover:bg-gray-50'}`}
         >
             <div className="flex items-center gap-3 text-gray-600">
-                <span className={active ? "text-[#EF2460]" : ""}>{icon}</span>
+                <span className={active ? "text-[#BD713E]" : ""}>{icon}</span>
                 <span className={`text-sm font-bold ${active ? "text-gray-900" : ""}`}>{label}</span>
             </div>
             <ArrowRight size={16} className={`text-gray-300 ${active ? "opacity-100" : "opacity-0"}`} />

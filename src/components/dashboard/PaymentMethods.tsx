@@ -51,7 +51,7 @@ export default function PaymentMethods() {
                 <h2 className="text-2xl font-bold text-gray-800 font-['Poppins']">Payment Methods</h2>
                 <button
                     onClick={() => setIsAdding(true)}
-                    className="flex items-center gap-2 bg-pink-50 text-[#EF2460] px-4 py-2 rounded-xl text-sm font-bold hover:bg-pink-100 transition"
+                    className="flex items-center gap-2 bg-[#BD713E]/10 text-[#BD713E] px-4 py-2 rounded-xl text-sm font-bold hover:bg-[#BD713E]/20 transition"
                 >
                     <Plus size={16} /> Add New Card
                 </button>
@@ -69,7 +69,7 @@ export default function PaymentMethods() {
                             <div>
                                 <label className="text-xs font-bold text-gray-500 uppercase">Cardholder Name</label>
                                 <input
-                                    className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 font-bold outline-none focus:border-[#EF2460]"
+                                    className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 font-bold outline-none focus:border-[#BD713E]"
                                     value={newCard.cardHolderName}
                                     onChange={e => setNewCard({ ...newCard, cardHolderName: e.target.value })}
                                     required
@@ -79,7 +79,7 @@ export default function PaymentMethods() {
                                 <div className="flex-1">
                                     <label className="text-xs font-bold text-gray-500 uppercase">Last 4 Digits</label>
                                     <input
-                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 font-bold outline-none focus:border-[#EF2460]"
+                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 font-bold outline-none focus:border-[#BD713E]"
                                         value={newCard.last4}
                                         onChange={e => setNewCard({ ...newCard, last4: e.target.value })}
                                         maxLength={4}
@@ -90,7 +90,7 @@ export default function PaymentMethods() {
                                 <div className="flex-1">
                                     <label className="text-xs font-bold text-gray-500 uppercase">Card Type</label>
                                     <select
-                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 font-bold outline-none focus:border-[#EF2460]"
+                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 font-bold outline-none focus:border-[#BD713E]"
                                         value={newCard.type}
                                         onChange={e => setNewCard({ ...newCard, type: e.target.value })}
                                     >
@@ -103,7 +103,7 @@ export default function PaymentMethods() {
                                 <div className="flex-1">
                                     <label className="text-xs font-bold text-gray-500 uppercase">Exp Month</label>
                                     <input
-                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 font-bold outline-none focus:border-[#EF2460]"
+                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 font-bold outline-none focus:border-[#BD713E]"
                                         value={newCard.expiryMonth}
                                         onChange={e => setNewCard({ ...newCard, expiryMonth: e.target.value })}
                                         maxLength={2}
@@ -114,7 +114,7 @@ export default function PaymentMethods() {
                                 <div className="flex-1">
                                     <label className="text-xs font-bold text-gray-500 uppercase">Exp Year</label>
                                     <input
-                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 font-bold outline-none focus:border-[#EF2460]"
+                                        className="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-100 font-bold outline-none focus:border-[#BD713E]"
                                         value={newCard.expiryYear}
                                         onChange={e => setNewCard({ ...newCard, expiryYear: e.target.value })}
                                         maxLength={2}
@@ -123,7 +123,7 @@ export default function PaymentMethods() {
                                     />
                                 </div>
                             </div>
-                            <button className="w-full bg-[#EF2460] text-white py-3 rounded-xl font-bold shadow-lg mt-4">Save Card</button>
+                            <button className="w-full bg-[#BD713E] text-white py-3 rounded-xl font-bold shadow-lg mt-4">Save Card</button>
                         </form>
                     </div>
                 </div>
@@ -134,7 +134,7 @@ export default function PaymentMethods() {
                     <div className="text-center py-10 text-gray-400">No payment methods added yet.</div>
                 )}
                 {paymentMethods.map((method: any) => (
-                    <div key={method._id} className="flex items-center justify-between p-4 border border-gray-100 rounded-2xl hover:border-pink-100 hover:shadow-sm transition group">
+                    <div key={method._id} className="flex items-center justify-between p-4 border border-gray-100 rounded-2xl hover:border-[#BD713E]/30 hover:shadow-sm transition group">
                         <div className="flex items-center gap-4">
                             <div className={`w-12 h-8 rounded-md flex items-center justify-center text-xs font-bold ${method.type === 'visa' ? 'bg-blue-100 text-blue-600' : 'bg-orange-100 text-orange-600'}`}>
                                 {method.type === 'visa' ? 'VISA' : 'MC'}
@@ -154,7 +154,7 @@ export default function PaymentMethods() {
                 ))}
             </div>
 
-            <div className="mt-8 p-6 bg-[#FDF2F4] rounded-[24px]">
+            <div className="mt-8 p-6 bg-[#FAF5F0] rounded-[24px]">
                 <h3 className="font-bold text-gray-800 mb-2">Secure Payments</h3>
                 <p className="text-sm text-gray-500 mb-4">Your payment information is encrypted and secure. We do not store your full card details.</p>
                 <div className="flex items-center gap-3 opacity-60">
