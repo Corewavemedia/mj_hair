@@ -9,15 +9,29 @@ import type { Id } from "../../convex/_generated/dataModel";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import Navbar from "../components/Navbar";
+import { CountrySelect } from "../components/ui/CountrySelect";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
+interface Address {
+    fullName: string;
+    line1: string;
+    line2: string;
+    city: string;
+    postalCode: string;
+    country: string;
+    phone: string;
+    email: string;
+}
+
 function CheckoutForm({
     totalAmount,
-    onSubmitSuccess
+    onSubmitSuccess,
+    isFormComplete
 }: {
     totalAmount: number;
     onSubmitSuccess: (paymentIntentId: string) => void;
+    isFormComplete: boolean;
 }) {
     const stripe = useStripe();
     const elements = useElements();
@@ -32,11 +46,19 @@ function CheckoutForm({
             return;
         }
 
+        if (!isFormComplete) {
+            setMessage("Please fill in all required contact and shipping details first.");
+            return;
+        }
+
         setIsProcessing(true);
 
         try {
             const { error, paymentIntent } = await stripe.confirmPayment({
                 elements,
+                confirmParams: {
+                    return_url: window.location.origin + "/success",
+                },
                 redirect: "if_required",
             });
 
@@ -59,81 +81,121 @@ function CheckoutForm({
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <PaymentElement id="payment-element" onReady={() => setIsReady(true)} />
-            {message && <div className="text-red-500 text-sm mt-2">{message}</div>}
+            {message && <div className="text-red-500 text-sm mt-2 font-medium bg-red-50 p-3 rounded-lg border border-red-100">{message}</div>}
             <button
-                disabled={isProcessing || !stripe || !elements || !isReady}
+                disabled={isProcessing || !stripe || !elements || !isReady || !isFormComplete}
                 id="submit"
-                className="w-full bg-[#EF2460] text-white py-4 rounded-xl font-bold text-sm shadow-[0_10px_20px_rgba(239,36,96,0.2)] hover:shadow-[0_10px_30px_rgba(239,36,96,0.3)] hover:scale-[1.02] transition-all disabled:opacity-50"
+                className="w-full bg-[#EF2460] text-white py-4 rounded-xl font-bold text-base shadow-[0_10px_20px_rgba(239,36,96,0.2)] hover:shadow-[0_15px_30px_rgba(239,36,96,0.3)] hover:scale-[1.01] transition-all disabled:opacity-50 disabled:grayscale disabled:scale-100 disabled:shadow-none mt-4 disabled:cursor-not-allowed"
             >
-                {isProcessing ? "Processing..." : (!isReady ? "Loading Payment..." : `Pay £${totalAmount.toLocaleString()}`)}
+                {isProcessing ? "Processing..." : (!isReady ? "Loading Secure Payment..." : (!isFormComplete ? "Complete Details to Pay" : `Pay £${totalAmount.toLocaleString()}`))}
             </button>
         </form>
     );
 }
+
+
 
 export default function CheckoutPage() {
     const { cart, totalAmount, clearCart } = useCart();
     const navigate = useNavigate();
     const { user, isLoaded, isSignedIn } = useUser();
 
-    // Mutations and Actions
+    // Convex
     const createOrder = useMutation(api.orders.createOrder);
     const createPaymentIntent = useAction(api.payments.createPaymentIntent);
-    const userOrders = useQuery(api.orders.getUserOrders);
+    const customer = useQuery(api.customers.getCurrentCustomer);
 
     const [clientSecret, setClientSecret] = useState("");
-    const [form, setForm] = useState({
+
+    // Address State matching the updated schema structure somewhat flattened for form
+    const [form, setForm] = useState<Address>({
+        fullName: "",
+        line1: "",
+        line2: "",
+        city: "",
+        postalCode: "",
         country: "",
-        state: "",
         phone: "",
-        email: "",
-        address: ""
+        email: ""
     });
 
     const [hasAutofilled, setHasAutofilled] = useState(false);
 
     useEffect(() => {
-        if (userOrders && userOrders.length > 0 && !hasAutofilled && !form.address) {
-            const lastOrder = userOrders[0];
-            if (lastOrder.shippingAddress) {
-                const parts = lastOrder.shippingAddress.split(", ");
-                if (parts.length >= 3) {
-                    const country = parts[parts.length - 1];
-                    const state = parts[parts.length - 2];
-                    const streetAddress = parts.slice(0, parts.length - 2).join(", ");
+        // Wait for customer query to resolve (undefined = loading)
+        if (customer === undefined) return;
 
-                    setForm(prev => ({
-                        ...prev,
-                        country,
-                        state,
-                        address: streetAddress
-                    }));
-                    setHasAutofilled(true);
-                }
-            }
+        if (isLoaded && isSignedIn && customer && !hasAutofilled) {
+            setForm(prev => ({
+                ...prev,
+                fullName: customer.firstName && customer.lastName ? `${customer.firstName} ${customer.lastName}` : (user?.fullName || prev.fullName),
+                email: customer.email || user?.primaryEmailAddress?.emailAddress || prev.email,
+                phone: customer.phone || prev.phone,
+                line1: (customer.address as any)?.line1 || (customer.address as any)?.street || prev.line1,
+                line2: (customer.address as any)?.line2 || prev.line2,
+                city: customer.address?.city || prev.city,
+                postalCode: (customer.address as any)?.postalCode || (customer.address as any)?.zipCode || prev.postalCode,
+                country: customer.address?.country || prev.country
+            }));
+            setHasAutofilled(true);
+        } else if (isLoaded && isSignedIn && user && !hasAutofilled && customer === null) {
+            // Fallback to user data only if customer record is confirmed missing
+            setForm(prev => ({
+                ...prev,
+                fullName: user.fullName || prev.fullName,
+                email: user.primaryEmailAddress?.emailAddress || prev.email,
+            }));
+            setHasAutofilled(true);
         }
-    }, [userOrders, hasAutofilled, form.address]);
+    }, [isLoaded, isSignedIn, user, customer, hasAutofilled]);
 
-    const deliveryFee = 20.00;
-    const finalTotal = totalAmount + deliveryFee;
+    // Shipping Logic
+    const shippingCost = useMemo(() => {
+        if (form.country === "GB") return 5;
+        if (!form.country) return 0;
+        return 35;
+    }, [form.country]);
+
+    const finalTotal = totalAmount + shippingCost;
 
     useEffect(() => {
         if (finalTotal > 0 && !clientSecret) {
-            createPaymentIntent({ amount: Math.round(finalTotal * 100) })
-                .then((data) => {
-                    if (data.clientSecret) {
-                        setClientSecret(data.clientSecret);
-                    }
-                })
-                .catch((err) => console.error("Error creating payment intent:", err));
+            const timeoutId = setTimeout(() => {
+                if (form.country) {
+                    createPaymentIntent({ amount: Math.round(finalTotal * 100) })
+                        .then((data) => {
+                            if (data.clientSecret) {
+                                setClientSecret(data.clientSecret);
+                            }
+                        })
+                        .catch((err) => console.error("Error creating payment intent:", err));
+                }
+            }, 500);
+            return () => clearTimeout(timeoutId);
+        } else if (finalTotal > 0 && clientSecret) {
+            const timeoutId = setTimeout(() => {
+                if (form.country) {
+                    createPaymentIntent({ amount: Math.round(finalTotal * 100) })
+                        .then((data) => {
+                            if (data.clientSecret) {
+                                setClientSecret(data.clientSecret);
+                            }
+                        })
+                        .catch((err) => console.error("Error creating payment intent:", err));
+                }
+            }, 500); // 500ms debounce
+            return () => clearTimeout(timeoutId);
         }
-    }, [finalTotal, createPaymentIntent, clientSecret]);
-
+    }, [finalTotal, createPaymentIntent, form.country]); // Depend on totalAmount and country
 
     if (cart.length === 0) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-[#FFF5F7]">
-                <p>Your cart is empty. <button onClick={() => navigate("/")} className="text-[#EF2460] font-bold">Go back</button></p>
+                <div className="text-center">
+                    <h2 className="text-2xl font-bold text-gray-800 mb-4">Your cart is empty</h2>
+                    <p className="text-gray-500 mb-6">Looks like checkout was accessed without items.</p>
+                    <button onClick={() => navigate("/shop")} className="text-[#EF2460] font-bold hover:underline">Return to Shop</button>
+                </div>
             </div>
         );
     }
@@ -142,16 +204,13 @@ export default function CheckoutPage() {
         setForm({ ...form, [e.target.name]: e.target.value });
     };
 
-    const handleOrderCreation = async (paymentIntentId: string) => {
-        if (!isLoaded || !isSignedIn || !user) {
-            alert("You must be logged in to place an order.");
-            return;
-        }
+    const handleCountryChange = (code: string) => {
+        setForm(prev => ({ ...prev, country: code }));
+    };
 
-        // Final validation before order creation (payment is already successful)
-        if (!form.address || !form.country) {
-            // This case should be handled before payment, but as a safeguard
-            alert("Shipping address missing.");
+    const handleOrderCreation = async (paymentIntentId: string) => {
+        if (!form.line1) { // checking line1 as primary address
+            alert("Address is required");
             return;
         }
 
@@ -165,9 +224,19 @@ export default function CheckoutPage() {
 
             await createOrder({
                 items: orderItems,
-                totalPrice: finalTotal,
-                shippingAddress: `${form.address}, ${form.state}, ${form.country}`,
+                totalPrice: finalTotal, // This is roughly checked, backend recalculates shipping
+                shippingAddress: {
+                    fullName: form.fullName,
+                    line1: form.line1,
+                    line2: form.line2,
+                    city: form.city,
+                    postalCode: form.postalCode,
+                    country: form.country,
+                },
                 paymentIntentId: paymentIntentId,
+                customerName: form.fullName,
+                customerEmail: form.email,
+                customerPhone: form.phone,
             });
 
             clearCart();
@@ -180,79 +249,175 @@ export default function CheckoutPage() {
 
     const paymentElementOptions = useMemo(() => ({
         clientSecret,
-        appearance: { theme: 'stripe' as const },
+        appearance: {
+            theme: 'stripe' as const,
+            variables: {
+                colorPrimary: '#EF2460',
+                colorBackground: '#ffffff',
+                colorText: '#1A1A1A',
+                borderRadius: '12px',
+                fontFamily: 'Manrope, sans-serif',
+            }
+        },
     }), [clientSecret]);
 
+    const isFormValid = useMemo(() => {
+        return Boolean(
+            form.fullName &&
+            form.line1 &&
+            form.city &&
+            form.postalCode &&
+            form.country &&
+            form.email &&
+            form.phone
+        );
+    }, [form]);
+
     return (
-        <div className="min-h-screen bg-[#FFF5F7] font-['Manrope']">
+        <div className="min-h-screen bg-[#F9FAFB] font-['Manrope']">
             <Navbar />
 
-            <div className="max-w-[1200px] mx-auto pt-40 pb-20 px-6">
-
-                {/* Breadcrumbs / Header area */}
-                <div className="mb-10">
-                    <h1 className="text-3xl font-bold text-[#1A1A1A] mb-2 font-['Poppins']">Checkout Page</h1>
-                    <div className="flex items-center gap-2 text-sm text-gray-500 font-medium">
-                        <span>Details</span>
+            <div className="max-w-[1200px] mx-auto pt-32 pb-20 px-6">
+                {/* Breadcrumbs */}
+                <div className="mb-10 text-center lg:text-left">
+                    <h1 className="text-4xl font-bold text-[#1A1A1A] mb-3 font-['Poppins']">Checkout</h1>
+                    <div className="flex items-center justify-center lg:justify-start gap-2 text-sm text-gray-500 font-medium">
+                        <span className="hover:text-[#EF2460] cursor-pointer" onClick={() => navigate('/cart')}>Cart</span>
                         <span className="text-gray-300">›</span>
-                        <span>Shopping Cart</span>
+                        <span className="text-[#EF2460] font-bold">Secure Checkout</span>
                         <span className="text-gray-300">›</span>
-                        <span className="text-[#EF2460]">Checkout</span>
+                        <span>Confirmation</span>
                     </div>
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-12">
                     {/* Left Column: Form Section */}
-                    <div className="flex-1 bg-white p-8 lg:p-10 rounded-[24px] shadow-sm">
-                        <div className="space-y-8">
+                    <div className="flex-1 space-y-8">
 
-                            {/* Contact & Region Section */}
+                        {/* Customer Information */}
+                        <div className="bg-white p-8 lg:p-10 rounded-[24px] shadow-sm border border-gray-100">
+                            <h2 className="text-xl font-bold text-[#1A1A1A] mb-6 flex items-center gap-2">
+                                <span className="w-8 h-8 rounded-full bg-[#EF2460]/10 text-[#EF2460] flex items-center justify-center text-sm font-bold">1</span>
+                                Contact Information
+                            </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label className="block text-sm font-bold text-[#1A1A1A] mb-3">Country</label>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Full Name</label>
                                     <input
                                         type="text"
-                                        name="country"
-                                        className="w-full p-4 bg-gray-50 rounded-xl border border-transparent focus:bg-white focus:border-[#EF2460] outline-none transition placeholder-gray-400 text-sm font-medium"
-                                        placeholder="Enter Country"
-                                        value={form.country}
+                                        name="fullName"
+                                        className="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:border-[#EF2460] focus:ring-4 focus:ring-[#EF2460]/10 outline-none transition-all placeholder-gray-400 text-sm font-medium"
+                                        placeholder="Jane Doe"
+                                        value={form.fullName}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        className="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:border-[#EF2460] focus:ring-4 focus:ring-[#EF2460]/10 outline-none transition-all placeholder-gray-400 text-sm font-medium"
+                                        placeholder="jane@example.com"
+                                        value={form.email}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Phone Number</label>
+                                    <input
+                                        type="tel"
+                                        name="phone"
+                                        className="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:border-[#EF2460] focus:ring-4 focus:ring-[#EF2460]/10 outline-none transition-all placeholder-gray-400 text-sm font-medium"
+                                        placeholder="+1 (555) 000-0000"
+                                        value={form.phone}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Shipping Address */}
+                        <div className="bg-white p-8 lg:p-10 rounded-[24px] shadow-sm border border-gray-100">
+                            <h2 className="text-xl font-bold text-[#1A1A1A] mb-6 flex items-center gap-2">
+                                <span className="w-8 h-8 rounded-full bg-[#EF2460]/10 text-[#EF2460] flex items-center justify-center text-sm font-bold">2</span>
+                                Shipping Address
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Address Line 1</label>
+                                    <input
+                                        type="text"
+                                        name="line1"
+                                        className="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:border-[#EF2460] focus:ring-4 focus:ring-[#EF2460]/10 outline-none transition-all placeholder-gray-400 text-sm font-medium"
+                                        placeholder="123 Main St"
+                                        value={form.line1}
+                                        onChange={handleChange}
+                                        required
+                                    />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Address Line 2 (Optional)</label>
+                                    <input
+                                        type="text"
+                                        name="line2"
+                                        className="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:border-[#EF2460] focus:ring-4 focus:ring-[#EF2460]/10 outline-none transition-all placeholder-gray-400 text-sm font-medium"
+                                        placeholder="Apt 4B"
+                                        value={form.line2}
+                                        onChange={handleChange}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">City</label>
+                                    <input
+                                        type="text"
+                                        name="city"
+                                        className="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:border-[#EF2460] focus:ring-4 focus:ring-[#EF2460]/10 outline-none transition-all placeholder-gray-400 text-sm font-medium"
+                                        placeholder="New York"
+                                        value={form.city}
                                         onChange={handleChange}
                                         required
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-bold text-[#1A1A1A] mb-3">State/Union Territory</label>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Zip / Postal Code</label>
                                     <input
                                         type="text"
-                                        name="state"
-                                        className="w-full p-4 bg-gray-50 rounded-xl border border-transparent focus:bg-white focus:border-[#EF2460] outline-none transition placeholder-gray-400 text-sm font-medium"
-                                        placeholder="Enter State"
-                                        value={form.state}
+                                        name="postalCode"
+                                        className="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:border-[#EF2460] focus:ring-4 focus:ring-[#EF2460]/10 outline-none transition-all placeholder-gray-400 text-sm font-medium"
+                                        placeholder="10001"
+                                        value={form.postalCode}
                                         onChange={handleChange}
+                                        required
                                     />
                                 </div>
+                                <div className="md:col-span-2">
+                                    <CountrySelect value={form.country} onChange={handleCountryChange} />
+                                </div>
                             </div>
-                            <input
-                                type="text"
-                                name="address"
-                                className="w-full p-3 bg-white border border-gray-200 rounded-xl focus:border-[#EF2460] outline-none text-sm placeholder-gray-400"
-                                placeholder="Full Address"
-                                value={form.address}
-                                onChange={handleChange}
-                                required
-                            />
+                        </div>
 
-                            {/* Payment Method Section */}
+                        {/* Payment Method Section */}
+                        <div className="bg-white p-8 lg:p-10 rounded-[24px] shadow-sm border border-gray-100">
+                            <h2 className="text-xl font-bold text-[#1A1A1A] mb-6 flex items-center gap-2">
+                                <span className="w-8 h-8 rounded-full bg-[#EF2460]/10 text-[#EF2460] flex items-center justify-center text-sm font-bold">3</span>
+                                Payment Method
+                            </h2>
                             <div>
-                                <h2 className="text-lg font-bold text-[#1A1A1A] mb-6">Payment Method</h2>
-                                {clientSecret && (
+                                {clientSecret && form.country ? (
                                     <Elements options={paymentElementOptions} stripe={stripePromise}>
-                                        <CheckoutForm totalAmount={finalTotal} onSubmitSuccess={handleOrderCreation} />
+                                        <CheckoutForm
+                                            totalAmount={finalTotal}
+                                            onSubmitSuccess={handleOrderCreation}
+                                            isFormComplete={isFormValid}
+                                        />
                                     </Elements>
-                                )}
-                                {!clientSecret && (
-                                    <div className="p-4 text-center text-gray-500">
-                                        Loading payment details...
+                                ) : (
+                                    <div className="p-8 text-center text-gray-500 bg-gray-50 rounded-xl">
+                                        {!form.country ? "Please select a shipping country to proceed." : "Loading secure payment gateway..."}
                                     </div>
                                 )}
                             </div>
@@ -260,26 +425,71 @@ export default function CheckoutPage() {
                     </div>
 
                     {/* Right Column: Order Details Summary */}
-                    <div className="w-full lg:w-[400px]">
-                        <h2 className="text-lg font-bold text-[#1A1A1A] mb-6 font-['Poppins']">Order Details</h2>
+                    <div className="w-full lg:w-[380px]">
+                        <div className="sticky top-28 space-y-6">
+                            <div className="bg-white p-6 rounded-[24px] shadow-sm border border-gray-100">
+                                <h2 className="text-lg font-bold text-[#1A1A1A] mb-4 font-['Poppins']">Order Summary</h2>
 
-                        <div className="bg-white p-6 rounded-[24px] shadow-sm mb-6">
-                            <div className="space-y-4">
-                                <div className="flex justify-between items-center text-sm font-medium text-[#1A1A1A]">
-                                    <span>Price</span>
-                                    <span className="font-bold">£{totalAmount.toLocaleString()}</span>
-                                </div>
-                                <div className="flex justify-between items-center text-sm font-medium text-[#1A1A1A]">
-                                    <span>Delivery Fee</span>
-                                    <span className="font-bold">£{deliveryFee.toFixed(2)}</span>
+                                {/* Cart Items Preview */}
+                                <div className="space-y-4 mb-6">
+                                    {cart.slice(0, 3).map((item) => (
+                                        <div key={item.productId} className="flex gap-4 items-center">
+                                            <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                                                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                                            </div>
+                                            <div className="flex-1 min-w-0">
+                                                <p className="text-sm font-bold text-gray-900 truncate">{item.name}</p>
+                                                <p className="text-xs text-gray-500">Qty: {item.quantity}</p>
+                                            </div>
+                                            <p className="text-sm font-bold text-gray-900">£{(item.price * item.quantity).toLocaleString()}</p>
+                                        </div>
+                                    ))}
+                                    {cart.length > 3 && (
+                                        <p className="text-xs text-gray-500 text-center pt-2 italic">+ {cart.length - 3} more items</p>
+                                    )}
                                 </div>
 
-                                <div className="h-px bg-gray-100 my-2"></div>
+                                <div className="border-t border-gray-100 pt-4 space-y-3">
+                                    <div className="flex justify-between items-center text-sm text-gray-600">
+                                        <span>Subtotal</span>
+                                        <span className="font-bold text-gray-900">£{totalAmount.toLocaleString()}</span>
+                                    </div>
+                                    <div className="flex justify-between items-center text-sm text-gray-600">
+                                        <span>Shipping</span>
+                                        <span className="font-bold text-gray-900">
+                                            {form.country ? `£${shippingCost.toFixed(2)}` : '--'}
+                                        </span>
+                                    </div>
+                                    {form.country === "GB" && (
+                                        <div className="flex justify-end text-xs text-green-600 font-medium">
+                                            United Kingdom Shipping
+                                        </div>
+                                    )}
+                                    {form.country && form.country !== "GB" && (
+                                        <div className="flex justify-end text-xs text-blue-600 font-medium">
+                                            International Shipping
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className="border-t border-dashed border-gray-200 my-4"></div>
 
                                 <div className="flex justify-between items-center text-lg font-bold">
                                     <span className="text-[#1A1A1A]">Total</span>
-                                    <span className="text-[#1A1A1A]">£{finalTotal.toLocaleString()}</span>
+                                    <span className="text-[#EF2460]">
+                                        {form.country ? `£${finalTotal.toLocaleString()}` : 'Calculated at next step'}
+                                    </span>
                                 </div>
+                            </div>
+
+                            <div className="bg-[#EF2460]/5 p-6 rounded-[24px] border border-[#EF2460]/10">
+                                <h3 className="text-sm font-bold text-[#EF2460] mb-2 flex items-center gap-2">
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                                    Secure Checkout
+                                </h3>
+                                <p className="text-xs text-gray-600 leading-relaxed">
+                                    Your payment information is encrypted and processed securely by Stripe. We do not store your credit card details.
+                                </p>
                             </div>
                         </div>
                     </div>

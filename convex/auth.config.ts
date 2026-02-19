@@ -1,7 +1,7 @@
 export default {
     providers: [
         {
-            domain: "https://faithful-haddock-26.clerk.accounts.dev",
+            domain: "https://fine-ladybird-12.clerk.accounts.dev",
             applicationID: "convex",
         },
     ],
