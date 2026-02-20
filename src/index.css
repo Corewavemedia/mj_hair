@@ -22,7 +22,7 @@ body {
 @source inline("font-['Bree Serif',serif]");
 
 @theme {
-    --color-primary: #FF2A6A;
+    --color-primary: #643613;
     --color-admin-burgundy: #5F0F40;
     --color-admin-mint: #D4F4E4;
     --color-admin-sage: #A3C4BC;
