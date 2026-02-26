@@ -1,7 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { checkAdmin } from "./admin";
-import { api } from "./_generated/api";
 
 // Products
 export const generateUploadUrl = mutation(async (ctx) => {
