@@ -10,7 +10,8 @@
     ],
     "module": "ESNext",
     "types": [
-      "vite/client"
+      "vite/client",
+      "node"
     ],
     "skipLibCheck": true,
     /* Bundler mode */
@@ -29,7 +30,6 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "src",
-    "convex"
+    "src"
   ]
 }
