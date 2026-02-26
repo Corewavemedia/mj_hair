@@ -5,19 +5,19 @@ import { IconStar } from "./Icons";
 
 const testimonials = [
     {
-        name: "Lola From Canada",
+        name: "Amelia",
         image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=200&h=200",
-        review: "I was so worried about shipping to Toronto in time for my birthday, but it was surprisingly fast! The hair is affordable but feels so luxurious. Definitely coming back for more."
+        review: "The quality of the bundles is outstanding. Minimal shedding, true to length, and my clients keep coming back for installs using this hair. Wholesale pricing is fair for the consistency."
     },
     {
-        name: "Sarah (Salon Owner)",
+        name: "Sophie",
         image: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&h=200",
-        review: "Started my own hair business recently and Jenny's wholesale prices are unmatched. The installment plan really helped me stock up without breaking the bank. My clients love the textures!"
+        review: "Delivery across the UK was quicker than I expected and the packaging felt premium. The hair holds curls beautifully and still feels soft after washing. Definitely reordering for my salon."
     },
     {
-        name: "Jessica",
+        name: "Charlotte",
         image: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=200&h=200",
-        review: "Honestly, the installment payment option is a lifesaver! I could finally get the high-quality wig I wanted instead of settling. It looks so natural and blends perfectly."
+        review: "I have tried multiple suppliers and this is by far the most reliable. The density is full from root to tip and the lace melts perfectly. Customer service is responsive and professional."
     }
 ];
 
