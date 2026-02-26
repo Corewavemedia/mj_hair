@@ -76,7 +76,8 @@ export const createOrder = mutation({
             postalCode: v.string(),
             country: v.string(),
         }),
-        paymentIntentId: v.string(),
+        paymentIntentId: v.optional(v.string()),
+        checkoutPaymentId: v.optional(v.string()),
         customerName: v.string(),
         customerEmail: v.string(),
         customerPhone: v.optional(v.string()),
@@ -85,7 +86,7 @@ export const createOrder = mutation({
         const identity = await ctx.auth.getUserIdentity();
         const clerkId = identity?.subject || null; // Optional: Link to user if logged in
 
-        const { items, shippingAddress, paymentIntentId, customerName, customerEmail, customerPhone } = args;
+        const { items, shippingAddress, paymentIntentId, checkoutPaymentId, customerName, customerEmail, customerPhone } = args;
 
         const phone = customerPhone || "";
 
@@ -107,6 +108,7 @@ export const createOrder = mutation({
             paymentStatus: "paid",
             shippingAddress,
             paymentIntentId,
+            checkoutPaymentId,
             createdAt: Date.now(),
         });
 

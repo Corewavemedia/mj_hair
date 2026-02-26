@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import Footer from "../components/Footer";
@@ -6,12 +6,15 @@ import { useMutation, useAction, useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import { useUser } from "@clerk/clerk-react";
 import type { Id } from "../../convex/_generated/dataModel";
-import { loadStripe } from "@stripe/stripe-js";
-import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import Navbar from "../components/Navbar";
 import { CountrySelect } from "../components/ui/CountrySelect";
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+declare global {
+    interface Window {
+        Frames: any;
+        Klarna: any;
+    }
+}
 
 interface Address {
     fullName: string;
@@ -24,66 +27,276 @@ interface Address {
     email: string;
 }
 
-function CheckoutForm({
+function KlarnaForm({
     totalAmount,
+    shippingAmount,
+    cartDetails,
+    customerEmail,
+    formCompleteData,
     onSubmitSuccess,
+    onError,
     isFormComplete
 }: {
     totalAmount: number;
-    onSubmitSuccess: (paymentIntentId: string) => void;
+    shippingAmount: number;
+    cartDetails: any[];
+    customerEmail: string;
+    formCompleteData: Address;
+    onSubmitSuccess: (token: string, method: "klarna") => void;
+    onError?: (msg: string) => void;
     isFormComplete: boolean;
 }) {
-    const stripe = useStripe();
-    const elements = useElements();
     const [message, setMessage] = useState<string | null>(null);
     const [isProcessing, setIsProcessing] = useState(false);
     const [isReady, setIsReady] = useState(false);
+    const createPaymentContext = useAction(api.checkoutCom.createPaymentContext);
+    const initRef = useRef(false);
+
+    useEffect(() => {
+        if (onError) {
+            (window as any).__resetCheckoutForm = (errMsg: string) => {
+                setMessage(errMsg);
+                setIsProcessing(false);
+            };
+        }
+        return () => {
+            delete (window as any).__resetCheckoutForm;
+        };
+    }, [onError]);
+
+    useEffect(() => {
+        const initKlarna = async () => {
+            if (!isFormComplete || initRef.current) return;
+            try {
+                setMessage(null);
+                const items = cartDetails.map(item => ({
+                    name: item.name,
+                    quantity: item.quantity,
+                    unit_price: Math.round(item.price * 100),
+                    total_amount: Math.round(item.price * item.quantity * 100),
+                    reference: item.productId as string,
+                }));
+
+                if (shippingAmount > 0) {
+                    items.push({
+                        name: "Shipping Delivery",
+                        quantity: 1,
+                        unit_price: Math.round(shippingAmount * 100),
+                        total_amount: Math.round(shippingAmount * 100),
+                        reference: "shipping"
+                    });
+                }
+
+                const calculatedTotalAmount = items.reduce((sum, item) => sum + item.total_amount, 0);
+
+                const ctx = await createPaymentContext({
+                    amount: calculatedTotalAmount,
+                    currency: "GBP",
+                    reference: `ord_${Date.now()}`,
+                    items,
+                    customerEmail,
+                    customerName: formCompleteData.fullName,
+                    billingAddress: {
+                        address_line1: formCompleteData.line1,
+                        address_line2: formCompleteData.line2,
+                        city: formCompleteData.city,
+                        zip: formCompleteData.postalCode,
+                        country: formCompleteData.country
+                    }
+                });
+
+                if (window.Klarna) {
+                    initRef.current = true;
+                    window.Klarna.Payments.init({
+                        client_token: ctx.clientToken
+                    });
+                    window.Klarna.Payments.load({
+                        container: "#klarna-container",
+                        payment_method_category: "pay_later"
+                    }, (response: any) => {
+                        if (response.show_form) {
+                            setIsReady(true);
+                        } else {
+                            setMessage("Klarna is not available for this purchase. (Usually due to sandbox testing limitations)");
+                        }
+                    });
+                } else {
+                    setMessage("Klarna SDK failed to load.");
+                }
+            } catch (e: any) {
+                setMessage("Could not load Klarna: " + e.message);
+            }
+        };
+
+        if (isFormComplete) {
+            initKlarna();
+        }
+    }, [isFormComplete, cartDetails, totalAmount, shippingAmount, customerEmail, createPaymentContext, formCompleteData]);
+
+    const handleKlarnaSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!isFormComplete || !isReady) return;
+        setIsProcessing(true);
+        window.Klarna.Payments.authorize({
+            payment_method_category: "pay_later"
+        }, {}, (res: any) => {
+            if (res.approved && res.authorization_token) {
+                onSubmitSuccess(res.authorization_token, "klarna");
+            } else {
+                setIsProcessing(false);
+                setMessage(res.error ? `Klarna: ${res.error.error_message}` : "Klarna authorization dismissed.");
+            }
+        });
+    };
+
+    return (
+        <form onSubmit={handleKlarnaSubmit} className="space-y-6">
+            <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 min-h-[150px]">
+                {!isReady && !message && (
+                    <div className="flex items-center justify-center h-full text-gray-500 font-medium text-sm">
+                        {isFormComplete ? "Loading secure Klarna portal..." : "Please fill in all details above to securely load Klarna"}
+                    </div>
+                )}
+                {message && !isReady && (
+                    <div className="flex items-center gap-2 text-red-500 text-sm mt-2 font-medium bg-red-50 p-3 rounded-lg border border-red-100">
+                        {message}
+                    </div>
+                )}
+                <div id="klarna-container" className={`w-full ${!isReady ? 'hidden' : 'block'}`}></div>
+            </div>
+
+            <button
+                disabled={isProcessing || !isReady || !isFormComplete}
+                className="w-full bg-[#FFB3C7] text-black py-4 rounded-xl font-bold text-base shadow-[0_10px_20px_rgba(255,179,199,0.3)] hover:shadow-[0_15px_30px_rgba(255,179,199,0.4)] hover:scale-[1.01] transition-all disabled:opacity-50 disabled:grayscale disabled:scale-100 disabled:shadow-none mt-4 disabled:cursor-not-allowed"
+            >
+                {isProcessing ? "Processing..." : (!isReady ? "Loading Klarna..." : (!isFormComplete ? "Complete Details to Pay" : `Pay £${totalAmount.toLocaleString()} with Klarna`))}
+            </button>
+        </form>
+    );
+}
+
+function CheckoutForm({
+    totalAmount,
+    onSubmitSuccess,
+    onError,
+    isFormComplete
+}: {
+    totalAmount: number;
+    onSubmitSuccess: (token: string, method: "card") => void;
+    onError?: (msg: string) => void;
+    isFormComplete: boolean;
+}) {
+    const [message, setMessage] = useState<string | null>(null);
+    const [isProcessing, setIsProcessing] = useState(false);
+    const [isReady, setIsReady] = useState(false);
+    const framesInitialized = useRef(false);
+
+    // Provide a way to manually reset processing state from parent
+    useEffect(() => {
+        if (onError) {
+            (window as any).__resetCheckoutForm = (errMsg: string) => {
+                setMessage(errMsg);
+                setIsProcessing(false);
+                if (window.Frames) {
+                    window.Frames.enableSubmitForm();
+                }
+            };
+        }
+        return () => {
+            delete (window as any).__resetCheckoutForm;
+        };
+    }, [onError]);
+
+    const onSubmitSuccessRef = useRef(onSubmitSuccess);
+    useEffect(() => {
+        onSubmitSuccessRef.current = onSubmitSuccess;
+    }, [onSubmitSuccess]);
+
+    useEffect(() => {
+        if (window.Frames && !framesInitialized.current) {
+            framesInitialized.current = true;
+            window.Frames.init({
+                publicKey: import.meta.env.VITE_CHECKOUT_PUBLIC_KEY,
+                localization: {
+                    cardNumberPlaceholder: "Card number",
+                    expiryMonthPlaceholder: "MM",
+                    expiryYearPlaceholder: "YY",
+                    cvvPlaceholder: "CVV",
+                },
+                style: {
+                    base: {
+                        color: '#1A1A1A',
+                        fontSize: '16px',
+                        fontFamily: 'Manrope, sans-serif',
+                        lineHeight: '24px',
+                    },
+                    focus: { color: '#EF2460' },
+                    valid: { color: '#1A1A1A' },
+                    invalid: { color: '#EF2460' }
+                }
+            });
+
+            window.Frames.addEventHandler(window.Frames.Events.FRAME_ACTIVATED, () => setIsReady(true));
+            window.Frames.addEventHandler(window.Frames.Events.CARD_TOKENIZATION_FAILED, () => {
+                setMessage("Card tokenization failed. Check details.");
+                setIsProcessing(false);
+            });
+            window.Frames.addEventHandler(window.Frames.Events.CARD_TOKENIZED, (event: any) => {
+                setMessage(null);
+                onSubmitSuccessRef.current(event.token, "card");
+            });
+        }
+        return () => {
+            if (window.Frames && framesInitialized.current) {
+                window.Frames.removeAllEventHandlers();
+                // We DON'T set framesInitialized.current = false here because we don't want to re-init on this instance
+            }
+        };
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        if (!stripe || !elements) {
-            return;
-        }
-
         if (!isFormComplete) {
-            setMessage("Please fill in all required contact and shipping details first.");
+            setMessage("Please fill in all details.");
             return;
         }
-
         setIsProcessing(true);
-
-        try {
-            const { error, paymentIntent } = await stripe.confirmPayment({
-                elements,
-                confirmParams: {
-                    return_url: window.location.origin + "/success",
-                },
-                redirect: "if_required",
-            });
-
-            if (error) {
-                setMessage(error.message ?? "An unexpected error occurred.");
-                setIsProcessing(false);
-            } else if (paymentIntent && paymentIntent.status === "succeeded") {
-                setIsProcessing(false);
-                onSubmitSuccess(paymentIntent.id);
-            } else {
-                setMessage("Payment processing...");
-                setIsProcessing(false);
-            }
-        } catch (err) {
-            setMessage("An unexpected error occurred.");
-            setIsProcessing(false);
-        }
+        window.Frames.submitCard();
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
-            <PaymentElement id="payment-element" onReady={() => setIsReady(true)} />
-            {message && <div className="text-red-500 text-sm mt-2 font-medium bg-red-50 p-3 rounded-lg border border-red-100">{message}</div>}
+            <div>
+                <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">Card Number</label>
+                <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
+                    <div className="card-number-frame w-full h-[24px]"></div>
+                </div>
+            </div>
+
+            <div className="flex gap-4">
+                <div className="flex-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">Expiry Date</label>
+                    <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
+                        <div className="expiry-date-frame w-full h-[24px]"></div>
+                    </div>
+                </div>
+                <div className="flex-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">CVV</label>
+                    <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3">
+                        <div className="cvv-frame w-full h-[24px]"></div>
+                    </div>
+                </div>
+            </div>
+            {message && (
+                <div className="flex items-start gap-3 p-4 rounded-xl bg-red-50 border border-red-100 text-red-600">
+                    <svg className="w-5 h-5 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                    <p className="text-sm font-medium leading-snug">{message}</p>
+                </div>
+            )}
             <button
-                disabled={isProcessing || !stripe || !elements || !isReady || !isFormComplete}
+                disabled={isProcessing || !isReady || !isFormComplete}
                 id="submit"
                 className="w-full bg-[#EF2460] text-white py-4 rounded-xl font-bold text-base shadow-[0_10px_20px_rgba(239,36,96,0.2)] hover:shadow-[0_15px_30px_rgba(239,36,96,0.3)] hover:scale-[1.01] transition-all disabled:opacity-50 disabled:grayscale disabled:scale-100 disabled:shadow-none mt-4 disabled:cursor-not-allowed"
             >
@@ -94,7 +307,6 @@ function CheckoutForm({
 }
 
 
-
 export default function CheckoutPage() {
     const { cart, totalAmount, clearCart } = useCart();
     const navigate = useNavigate();
@@ -102,10 +314,9 @@ export default function CheckoutPage() {
 
     // Convex
     const createOrder = useMutation(api.orders.createOrder);
-    const createPaymentIntent = useAction(api.payments.createPaymentIntent);
+    const processPayment = useAction(api.payments.processPayment);
     const customer = useQuery(api.customers.getCurrentCustomer);
 
-    const [clientSecret, setClientSecret] = useState("");
 
     // Address State matching the updated schema structure somewhat flattened for form
     const [form, setForm] = useState<Address>({
@@ -120,6 +331,89 @@ export default function CheckoutPage() {
     });
 
     const [hasAutofilled, setHasAutofilled] = useState(false);
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<"card" | "klarna">("card");
+
+    // Shipping Logic
+    const shippingCost = useMemo(() => {
+        if (form.country === "GB") return 5;
+        if (!form.country) return 0;
+        return 35;
+    }, [form.country]);
+
+    const finalTotal = totalAmount + shippingCost;
+
+    const isFormValid = useMemo(() => {
+        return Boolean(
+            form.fullName &&
+            form.line1 &&
+            form.city &&
+            form.postalCode &&
+            form.country &&
+            form.email &&
+            form.phone
+        );
+    }, [form]);
+
+    const handleOrderCreation = useCallback(async (token: string, method: "card" | "klarna") => {
+        try {
+            const paymentResponse = await processPayment({
+                amount: Math.round(finalTotal * 100),
+                currency: "GBP",
+                token: token,
+                paymentMethod: method,
+                reference: `ord_${Date.now()}`,
+                customerEmail: form.email,
+                customerName: form.fullName
+            });
+
+            if (!paymentResponse || !paymentResponse.id || (paymentResponse.approved === false)) {
+                if ((window as any).__resetCheckoutForm) {
+                    (window as any).__resetCheckoutForm("Payment declined by bank.");
+                } else {
+                    alert("Payment declined or failed processing.");
+                }
+                return;
+            }
+
+            const orderItems = cart.map(item => ({
+                productId: item.productId as Id<"products">,
+                quantity: item.quantity,
+                price: item.price,
+                name: item.name
+            }));
+
+            await createOrder({
+                items: orderItems,
+                totalPrice: finalTotal,
+                shippingAddress: {
+                    fullName: form.fullName,
+                    line1: form.line1,
+                    line2: form.line2,
+                    city: form.city,
+                    postalCode: form.postalCode,
+                    country: form.country,
+                },
+                checkoutPaymentId: paymentResponse.id,
+                customerName: form.fullName,
+                customerEmail: form.email,
+                customerPhone: form.phone,
+            });
+
+            clearCart();
+            navigate("/success");
+        } catch (error: any) {
+            console.error("Order creation failed:", error);
+
+            // Unblock the submit button by calling the exposed reset function
+            if ((window as any).__resetCheckoutForm) {
+                const msg = error.message ? error.message.replace("Uncaught Error: ", "") : "Payment or order creation failed.";
+                (window as any).__resetCheckoutForm(msg);
+            } else {
+                alert("Payment or order creation failed. Please check your details and try again.");
+            }
+        }
+    }, [form, finalTotal, cart, processPayment, createOrder, clearCart, navigate]);
+
 
     useEffect(() => {
         // Wait for customer query to resolve (undefined = loading)
@@ -149,44 +443,14 @@ export default function CheckoutPage() {
         }
     }, [isLoaded, isSignedIn, user, customer, hasAutofilled]);
 
-    // Shipping Logic
-    const shippingCost = useMemo(() => {
-        if (form.country === "GB") return 5;
-        if (!form.country) return 0;
-        return 35;
-    }, [form.country]);
 
-    const finalTotal = totalAmount + shippingCost;
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setForm({ ...form, [e.target.name]: e.target.value });
+    };
 
-    useEffect(() => {
-        if (finalTotal > 0 && !clientSecret) {
-            const timeoutId = setTimeout(() => {
-                if (form.country) {
-                    createPaymentIntent({ amount: Math.round(finalTotal * 100) })
-                        .then((data) => {
-                            if (data.clientSecret) {
-                                setClientSecret(data.clientSecret);
-                            }
-                        })
-                        .catch((err) => console.error("Error creating payment intent:", err));
-                }
-            }, 500);
-            return () => clearTimeout(timeoutId);
-        } else if (finalTotal > 0 && clientSecret) {
-            const timeoutId = setTimeout(() => {
-                if (form.country) {
-                    createPaymentIntent({ amount: Math.round(finalTotal * 100) })
-                        .then((data) => {
-                            if (data.clientSecret) {
-                                setClientSecret(data.clientSecret);
-                            }
-                        })
-                        .catch((err) => console.error("Error creating payment intent:", err));
-                }
-            }, 500); // 500ms debounce
-            return () => clearTimeout(timeoutId);
-        }
-    }, [finalTotal, createPaymentIntent, form.country]); // Depend on totalAmount and country
+    const handleCountryChange = (code: string) => {
+        setForm(prev => ({ ...prev, country: code }));
+    };
 
     if (cart.length === 0) {
         return (
@@ -199,79 +463,6 @@ export default function CheckoutPage() {
             </div>
         );
     }
-
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setForm({ ...form, [e.target.name]: e.target.value });
-    };
-
-    const handleCountryChange = (code: string) => {
-        setForm(prev => ({ ...prev, country: code }));
-    };
-
-    const handleOrderCreation = async (paymentIntentId: string) => {
-        if (!form.line1) { // checking line1 as primary address
-            alert("Address is required");
-            return;
-        }
-
-        try {
-            const orderItems = cart.map(item => ({
-                productId: item.productId as Id<"products">,
-                quantity: item.quantity,
-                price: item.price,
-                name: item.name
-            }));
-
-            await createOrder({
-                items: orderItems,
-                totalPrice: finalTotal, // This is roughly checked, backend recalculates shipping
-                shippingAddress: {
-                    fullName: form.fullName,
-                    line1: form.line1,
-                    line2: form.line2,
-                    city: form.city,
-                    postalCode: form.postalCode,
-                    country: form.country,
-                },
-                paymentIntentId: paymentIntentId,
-                customerName: form.fullName,
-                customerEmail: form.email,
-                customerPhone: form.phone,
-            });
-
-            clearCart();
-            navigate("/success");
-        } catch (error) {
-            console.error("Order creation failed:", error);
-            alert("Payment successful but order creation failed. Please contact support.");
-        }
-    };
-
-    const paymentElementOptions = useMemo(() => ({
-        clientSecret,
-        appearance: {
-            theme: 'stripe' as const,
-            variables: {
-                colorPrimary: '#EF2460',
-                colorBackground: '#ffffff',
-                colorText: '#1A1A1A',
-                borderRadius: '12px',
-                fontFamily: 'Manrope, sans-serif',
-            }
-        },
-    }), [clientSecret]);
-
-    const isFormValid = useMemo(() => {
-        return Boolean(
-            form.fullName &&
-            form.line1 &&
-            form.city &&
-            form.postalCode &&
-            form.country &&
-            form.email &&
-            form.phone
-        );
-    }, [form]);
 
     return (
         <div className="min-h-screen bg-[#F9FAFB] font-['Manrope']">
@@ -406,15 +597,45 @@ export default function CheckoutPage() {
                                 <span className="w-8 h-8 rounded-full bg-[#EF2460]/10 text-[#EF2460] flex items-center justify-center text-sm font-bold">3</span>
                                 Payment Method
                             </h2>
+
+                            <div className="flex gap-4 mb-8">
+                                <button
+                                    onClick={() => setSelectedPaymentMethod("card")}
+                                    className={`flex-1 py-3 px-4 rounded-xl border-2 font-bold transition-all ${selectedPaymentMethod === "card" ? "border-[#EF2460] bg-[#EF2460]/5 text-[#EF2460]" : "border-gray-200 text-gray-500 hover:border-gray-300 bg-white"}`}
+                                >
+                                    Credit Card
+                                </button>
+                                {/* 
+                                <button
+                                    onClick={() => setSelectedPaymentMethod("klarna")}
+                                    className={`flex-1 py-3 px-4 rounded-xl border-2 font-bold transition-all ${selectedPaymentMethod === "klarna" ? "border-[#FFB3C7] bg-[#FFB3C7]/10 text-black" : "border-gray-200 text-gray-500 hover:border-gray-300 bg-white"}`}
+                                >
+                                    Klarna
+                                </button>
+                                */}
+                            </div>
+
                             <div>
-                                {clientSecret && form.country ? (
-                                    <Elements options={paymentElementOptions} stripe={stripePromise}>
+                                {form.country ? (
+                                    selectedPaymentMethod === "card" ? (
                                         <CheckoutForm
                                             totalAmount={finalTotal}
                                             onSubmitSuccess={handleOrderCreation}
+                                            onError={() => { }}
                                             isFormComplete={isFormValid}
                                         />
-                                    </Elements>
+                                    ) : (
+                                        <KlarnaForm
+                                            totalAmount={finalTotal}
+                                            shippingAmount={shippingCost}
+                                            cartDetails={cart}
+                                            customerEmail={form.email}
+                                            formCompleteData={form}
+                                            onSubmitSuccess={handleOrderCreation}
+                                            onError={() => { }}
+                                            isFormComplete={isFormValid}
+                                        />
+                                    )
                                 ) : (
                                     <div className="p-8 text-center text-gray-500 bg-gray-50 rounded-xl">
                                         {!form.country ? "Please select a shipping country to proceed." : "Loading secure payment gateway..."}
@@ -488,7 +709,7 @@ export default function CheckoutPage() {
                                     Secure Checkout
                                 </h3>
                                 <p className="text-xs text-gray-600 leading-relaxed">
-                                    Your payment information is encrypted and processed securely by Stripe. We do not store your credit card details.
+                                    Your payment information is encrypted and processed securely by Checkout.com. We do not store your credit card details.
                                 </p>
                             </div>
                         </div>

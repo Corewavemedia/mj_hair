@@ -122,6 +122,7 @@ export default defineSchema({
             })
         ),
         paymentIntentId: v.optional(v.string()),
+        checkoutPaymentId: v.optional(v.string()),
         sessionId: v.optional(v.string()),
         createdAt: v.number(),
     }).index("by_clerkId", ["clerkId"]).index("by_sessionId", ["sessionId"]),

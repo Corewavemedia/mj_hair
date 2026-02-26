@@ -159,7 +159,7 @@ export default function PaymentMethods() {
                 <p className="text-sm text-gray-500 mb-4">Your payment information is encrypted and secure. We do not store your full card details.</p>
                 <div className="flex items-center gap-3 opacity-60">
                     <CardIcon size={24} />
-                    <div className="text-xs font-bold text-gray-400">Powered by Stripe</div>
+                    <div className="text-xs font-bold text-gray-400">Powered by Checkout.com</div>
                 </div>
             </div>
         </div>
