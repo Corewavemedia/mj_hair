@@ -20,9 +20,8 @@
     "@fontsource/manrope": "^5.2.8",
     "@fontsource/poppins": "^5.2.7",
     "@fontsource/unna": "^5.2.8",
-    "@stripe/react-stripe-js": "^5.6.0",
-    "@stripe/stripe-js": "^8.7.0",
     "@tailwindcss/vite": "^4.1.18",
+    "checkout-sdk-node": "^3.1.0",
     "convex": "^1.31.6",
     "framer-motion": "^12.26.1",
     "jspdf": "^4.1.0",
@@ -34,7 +33,6 @@
     "react-router-dom": "^7.13.0",
     "recharts": "^3.7.0",
     "simple-icons": "^16.7.0",
-    "stripe": "^20.3.1",
     "tailwindcss": "^4.1.18"
   },
   "devDependencies": {

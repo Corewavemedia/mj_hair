@@ -1,6 +1,7 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { checkAdmin } from "./admin";
+import { api } from "./_generated/api";
 
 // Products
 export const generateUploadUrl = mutation(async (ctx) => {
@@ -187,6 +188,13 @@ export const deleteProduct = mutation({
     args: { id: v.id("products") },
     handler: async (ctx, args) => {
         await checkAdmin(ctx);
+        await ctx.db.delete(args.id);
+    },
+});
+
+export const deleteProductInternal = mutation({
+    args: { id: v.id("products") },
+    handler: async (ctx, args) => {
         await ctx.db.delete(args.id);
     },
 });
