@@ -9,7 +9,6 @@
  */
 
 import type * as admin from "../admin.js";
-import type * as checkoutCom from "../checkoutCom.js";
 import type * as customers from "../customers.js";
 import type * as dashboard from "../dashboard.js";
 import type * as http from "../http.js";
@@ -19,6 +18,7 @@ import type * as payments from "../payments.js";
 import type * as products from "../products.js";
 import type * as sales from "../sales.js";
 import type * as settings from "../settings.js";
+import type * as stripe from "../stripe.js";
 import type * as users from "../users.js";
 import type * as visitors from "../visitors.js";
 
@@ -30,7 +30,6 @@ import type {
 
 declare const fullApi: ApiFromModules<{
   admin: typeof admin;
-  checkoutCom: typeof checkoutCom;
   customers: typeof customers;
   dashboard: typeof dashboard;
   http: typeof http;
@@ -40,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   products: typeof products;
   sales: typeof sales;
   settings: typeof settings;
+  stripe: typeof stripe;
   users: typeof users;
   visitors: typeof visitors;
 }>;

@@ -2,6 +2,7 @@ import { httpRouter } from "convex/server";
 import { httpAction } from "./_generated/server";
 import { api } from "./_generated/api";
 import type { Id } from "./_generated/dataModel";
+import { handleStripeWebhook } from "./stripe";
 
 const http = httpRouter();
 
@@ -84,6 +85,11 @@ http.route({
             return new Response("Internal Server Error", { status: 500 });
         }
     }),
+});
+http.route({
+    path: "/stripe-webhook",
+    method: "POST",
+    handler: handleStripeWebhook,
 });
 
 export default http;
