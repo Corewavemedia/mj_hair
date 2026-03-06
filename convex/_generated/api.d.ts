@@ -18,6 +18,7 @@ import type * as payments from "../payments.js";
 import type * as products from "../products.js";
 import type * as sales from "../sales.js";
 import type * as settings from "../settings.js";
+import type * as stripe from "../stripe.js";
 import type * as users from "../users.js";
 import type * as visitors from "../visitors.js";
 
@@ -38,6 +39,7 @@ declare const fullApi: ApiFromModules<{
   products: typeof products;
   sales: typeof sales;
   settings: typeof settings;
+  stripe: typeof stripe;
   users: typeof users;
   visitors: typeof visitors;
 }>;

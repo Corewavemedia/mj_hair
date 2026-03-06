@@ -125,7 +125,7 @@ export default defineSchema({
         checkoutPaymentId: v.optional(v.string()),
         sessionId: v.optional(v.string()),
         createdAt: v.number(),
-    }).index("by_clerkId", ["clerkId"]).index("by_sessionId", ["sessionId"]),
+    }).index("by_clerkId", ["clerkId"]).index("by_sessionId", ["sessionId"]).index("by_paymentIntentId", ["paymentIntentId"]),
 
     checkouts: defineTable({
         clerkId: v.string(),

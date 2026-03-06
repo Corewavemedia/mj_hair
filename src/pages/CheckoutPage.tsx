@@ -10,6 +10,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import Navbar from "../components/Navbar";
 import { CountrySelect } from "../components/ui/CountrySelect";
+import { usStates } from "../data/us-states";
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -18,6 +19,7 @@ interface Address {
     line1: string;
     line2: string;
     city: string;
+    state: string;
     postalCode: string;
     country: string;
     phone: string;
@@ -113,6 +115,7 @@ export default function CheckoutPage() {
         line1: "",
         line2: "",
         city: "",
+        state: "",
         postalCode: "",
         country: "",
         phone: "",
@@ -134,6 +137,7 @@ export default function CheckoutPage() {
                 line1: (customer.address as any)?.line1 || (customer.address as any)?.street || prev.line1,
                 line2: (customer.address as any)?.line2 || prev.line2,
                 city: customer.address?.city || prev.city,
+                state: (customer.address as any)?.state || prev.state,
                 postalCode: (customer.address as any)?.postalCode || (customer.address as any)?.zipCode || prev.postalCode,
                 country: customer.address?.country || prev.country
             }));
@@ -179,6 +183,7 @@ export default function CheckoutPage() {
                     line1: form.line1,
                     line2: form.line2,
                     city: form.city,
+                    state: form.state,
                     postalCode: form.postalCode,
                     country: form.country,
                 },
@@ -231,6 +236,7 @@ export default function CheckoutPage() {
             form.fullName &&
             form.line1 &&
             form.city &&
+            (form.country === "US" ? form.state : true) &&
             form.postalCode &&
             form.country &&
             form.email &&
@@ -359,6 +365,25 @@ export default function CheckoutPage() {
                                         required
                                     />
                                 </div>
+                                {form.country === "US" && (
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">State</label>
+                                        <select
+                                            name="state"
+                                            className="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 focus:bg-white focus:border-[#EF2460] focus:ring-4 focus:ring-[#EF2460]/10 outline-none transition-all text-sm font-medium"
+                                            value={form.state}
+                                            onChange={(e) => setForm({ ...form, state: e.target.value })}
+                                            required
+                                        >
+                                            <option value="">Select a State</option>
+                                            {usStates.map((state) => (
+                                                <option key={state.code} value={state.code}>
+                                                    {state.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-2">Zip / Postal Code</label>
                                     <input
