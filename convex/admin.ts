@@ -3,6 +3,10 @@ export const adminEmails = [
     "admin@mjhairpalace.co.uk"
 ];
 
+export const adminPhoneNumbers = [
+    "whatsapp:+2348123456789" // Example, to be managed/used as needed
+];
+
 
 export async function checkAdmin(ctx: { auth: { getUserIdentity: () => Promise<any> } }) {
     const identity = await ctx.auth.getUserIdentity();

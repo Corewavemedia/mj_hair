@@ -158,6 +158,17 @@ export const createOrder = mutation({
             })),
         });
 
+        // Send WhatsApp notification to Admin
+        await ctx.scheduler.runAfter(0, internal.twilio.sendAdminWhatsAppNotification, {
+            orderId: orderId,
+            customerName: customerName,
+            totalPrice: finalTotal,
+            items: items.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+            })),
+        });
+
         return { orderId, finalTotal, shippingCost };
     },
 });
@@ -280,7 +291,16 @@ export const createOrderInternal = internalMutation({
             })),
         });
 
-        return orderId;
+        // Send WhatsApp notification to Admin
+        await ctx.scheduler.runAfter(0, internal.twilio.sendAdminWhatsAppNotification, {
+            orderId: orderId,
+            customerName: customerName,
+            totalPrice: finalTotal,
+            items: items.map(item => ({
+                name: item.name,
+                quantity: item.quantity,
+            })),
+        });
     },
 });
 
